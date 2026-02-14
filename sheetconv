@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Sheets link -> TSV / CSV links</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.4; }
+    .card { max-width: 900px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px; padding: 18px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button { padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; background: #f7f7f7; cursor: pointer; }
+    button:hover { background: #eee; }
+    .out { margin-top: 16px; }
+    .kv { margin: 8px 0; }
+    code { background: #f6f8fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 2px 6px; }
+    a { word-break: break-all; }
+    .muted { color: #666; font-size: 0.95rem; }
+    .error { color: #b00020; font-weight: 600; }
+    .primary { background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #c8e6c9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 style="margin-top: 0;">Google Sheets link -> Data links</h1>
+
+    <label for="sheetUrl">Paste a Google Sheets link</label>
+    <input id="sheetUrl" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../edit?gid=123#gid=123" />
+
+    <div class="row">
+      <button id="convertBtn" type="button">Convert</button>
+      <button id="exampleBtn" type="button">Use example</button>
+      <button id="clearBtn" type="button">Clear</button>
+    </div>
+
+    <p class="muted">
+      This converts a normal Sheets link into direct data links. TSV is usually the safest choice.
+      Make sure the sheet is shared as "Anyone with the link - Viewer".
+    </p>
+
+    <div id="result" class="out"></div>
+  </div>
+
+  <script>
+    const elUrl = document.getElementById("sheetUrl");
+    const elResult = document.getElementById("result");
+
+    document.getElementById("exampleBtn").addEventListener("click", () => {
+      elUrl.value = "https://docs.google.com/spreadsheets/d/1qPsHdONYrH1xCri1CypewrYQdmS9vZIJvjHqX2Q1uIQ/edit?gid=1919940108#gid=1919940108";
+      convert();
+    });
+
+    document.getElementById("convertBtn").addEventListener("click", convert);
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      elUrl.value = "";
+      elResult.innerHTML = "";
+      elUrl.focus();
+    });
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseGoogleSheetsLink(input) {
+      let u;
+      try {
+        u = new URL(input.trim());
+      } catch {
+        return { ok: false, error: "That does not look like a valid URL." };
+      }
+
+      const hostOk = u.hostname === "docs.google.com";
+      const pathOk = u.pathname.includes("/spreadsheets/d/");
+      if (!hostOk || !pathOk) {
+        return { ok: false, error: "This does not look like a Google Sheets URL from docs.google.com." };
+      }
+
+      const match = u.pathname.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      const spreadsheetId = match ? match[1] : null;
+      if (!spreadsheetId) {
+        return { ok: false, error: "Could not find the spreadsheet ID in the URL." };
+      }
+
+      let gid = u.searchParams.get("gid");
+      if (!gid && u.hash) {
+        const h = u.hash.startsWith("#") ? u.hash.slice(1) : u.hash;
+        const hm = h.match(/(?:^|&)gid=(\d+)/);
+        gid = hm ? hm[1] : null;
+      }
+
+      return { ok: true, spreadsheetId, gid };
+    }
+
+    function convert() {
+      const input = elUrl.value;
+      const parsed = parseGoogleSheetsLink(input);
+
+      if (!parsed.ok) {
+        elResult.innerHTML = `<p class="error">${escapeHtml(parsed.error)}</p>`;
+        return;
+      }
+
+      const { spreadsheetId, gid } = parsed;
+
+      const base = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+      const tsv = gid ? `${base}/export?format=tsv&gid=${gid}` : `${base}/export?format=tsv`;
+      const csv = gid ? `${base}/export?format=csv&gid=${gid}` : `${base}/export?format=csv`;
+      const xlsx = `${base}/export?format=xlsx`;
+      const pdf = `${base}/export?format=pdf`;
+
+      elResult.innerHTML = `
+        <div class="kv"><strong>Spreadsheet ID:</strong> <code>${escapeHtml(spreadsheetId)}</code></div>
+        <div class="kv"><strong>Sheet gid:</strong> <code>${escapeHtml(gid || "(not found)")}</code></div>
+
+        <h2>Recommended</h2>
+        <div class="primary">
+          <strong>TSV link</strong><br/>
+          <a href="${escapeHtml(tsv)}" target="_blank" rel="noopener">${escapeHtml(tsv)}</a>
+        </div>
+
+        <h3>Other formats</h3>
+        <p><strong>CSV:</strong><br/><a href="${escapeHtml(csv)}" target="_blank" rel="noopener">${escapeHtml(csv)}</a></p>
+        <p><strong>Excel (XLSX - whole file):</strong><br/><a href="${escapeHtml(xlsx)}" target="_blank" rel="noopener">${escapeHtml(xlsx)}</a></p>
+        <p><strong>PDF:</strong><br/><a href="${escapeHtml(pdf)}" target="_blank" rel="noopener">${escapeHtml(pdf)}</a></p>
+
+        <p class="muted">
+          If these links show a login page instead of data, change sharing to: Anyone with the link - Viewer.
+        </p>
+      `;
+    }
+
+    elUrl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") convert();
+    });
+  </script>
+</body>
+</html>
