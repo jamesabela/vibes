@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<th>Link</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<script>
+
+const TSV_URL = "https://docs.google.com/spreadsheets/d/1qPsHdONYrH1xCri1CypewrYQdmS9vZIJvjHqX2Q1uIQ/export?format=tsv&gid=1919940108";
+
+let allData = [];
+
+fetch(TSV_URL)
+.then(response => response.text())
+.then(text => {
+
+    const rows = text.trim().split("\n");
+    rows.shift();
+
+    allData = rows.map(row => {
+        const cols = row.split("\t");
+        return {
+            Title: cols[0],
+            Summary: cols[1],
+            Link: cols[2]
+        };
+    });
+
+    document.getElementById("total").textContent = allData.length;
+    renderTable(allData);
+});
+
+function renderTable(data) {
+    const tbody = document.querySelector("#table tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.Title}</td>
+            <td>${item.Summary || ""}</td>
+            <td><a href="${item.Link}" target="_blank">Open</a></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+
+document.getElementById("search").addEventListener("input", function() {
+    const query = this.value.toLowerCase();
+
+    const filtered = allData.filter(item =>
+        item.Title.toLowerCase().includes(query) ||
+        (item.Summary && item.Summary.toLowerCase().includes(query))
+    );
+
+    renderTable(filtered);
+});
+
+</script>
+
+</body>
+</html>
