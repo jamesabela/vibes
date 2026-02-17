@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fraction Tiles Builder</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --primary: #4a90e2;
+            --success: #48bb78;
+            --error: #f56565;
+            --whole-box: #ffffff;
+            --tile-color: #ed8936;
+            --text: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #game-container {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .fraction-display {
+            font-size: 3rem;
+            font-weight: bold;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .fraction-display span {
+            display: block;
+        }
+
+        .bar {
+            border-top: 4px solid var(--text);
+        }
+
+        /* The Whole Bar Model */
+        #drop-zone {
+            width: 100%;
+            height: 80px;
+            background: var(--whole-box);
+            border: 4px dashed #cbd5e0;
+            border-radius: 12px;
+            position: relative;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            box-sizing: border-box;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        #drop-zone.over {
+            border-color: var(--error);
+            transform: scale(1.02);
+        }
+
+        /* Draggable Tiles Area */
+        #inventory {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 100px;
+        }
+
+        .tile {
+            height: 60px;
+            background: var(--tile-color);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: grab;
+            /* Width set by JS based on fraction */
+            user-select: none;
+            touch-action: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .tile.in-bar {
+            height: 60px;
+            margin: 0 2px;
+            cursor: default;
+        }
+
+        /* Feedback and Celebration */
+        #message {
+            height: 30px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: var(--error);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+                background-color: var(--success);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .winner {
+            animation: celebrate 0.5s ease infinite;
+        }
+
+
+
+
+
+        /* Success Overlay */
+        #success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #success-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #success-message {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #next-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: #ffca28;
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        #next-btn:active {
+            transform: scale(0.95);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #fbd38d;
+            top: -10px;
+            z-index: 100;
+        }
+
+        /* Responsive tiles */
+        @media (max-width: 600px) {
+            #inventory {
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game-container">
+        <div class="header">
+            <h2>Build this fraction:</h2>
+            <div class="fraction-display">
+                <span>3</span>
+                <div class="bar"></div>
+                <span>4</span>
+            </div>
+        </div>
+
+        <div id="drop-zone">
+        </div>
+
+        <div id="message">Too many parts! Try again.</div>
+
+        <div id="inventory">
+        </div>
+    </div>
+
+    <div id="success-overlay">
+        <div id="success-message">Excellent Work!</div>
+        <button id="next-btn" onclick="nextFraction()">Next Fraction</button>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const inventory = document.getElementById('inventory');
+        const message = document.getElementById('message');
+        const numSpan = document.querySelector('.fraction-display span:first-child');
+        const denSpan = document.querySelector('.fraction-display span:last-child');
+
+        let TARGET = 0;
+        let startNum = 0;
+        let startDen = 0;
+        let currentTotal = 0;
+        let activeTile = null;
+        let offset = { x: 0, y: 0 };
+
+        function initGame() {
+            // Randomize Denominator (2-8)
+            // Exclude 7 as it's weird, maybe? No, 7 is fine. But typical sets: 2, 3, 4, 5, 6, 8, 10
+            const denoms = [2, 3, 4, 5, 6, 8, 10];
+            startDen = denoms[Math.floor(Math.random() * denoms.length)];
+
+            // Randomize Numerator (1 to den)
+            startNum = Math.floor(Math.random() * startDen) + 1;
+
+            TARGET = startNum / startDen;
+
+            // Update UI
+            numSpan.textContent = startNum;
+            denSpan.textContent = startDen;
+
+            // Clear previous
+            inventory.innerHTML = '';
+            dropZone.innerHTML = '';
+            dropZone.classList.remove('winner');
+            currentTotal = 0;
+
+            // Create Tiles (enough to make a whole + extras usually, but let's just give them 'den' number of tiles)
+            // Giving exactly 'startDen' tiles allows them to build 1 whole.
+            for (let i = 0; i < startDen; i++) {
+                createTile(1 / startDen, "1/" + startDen, startDen);
+            }
+        }
+
+        function createTile(value, label, denominator) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.textContent = label;
+            tile.dataset.value = value;
+
+            // Proportionate scaling
+            // The drop zone is the "whole".
+            // We want width to be (100 / denominator) %.
+            // But dragging uses pixels usually. Let's set percentage first.
+            // Subtract a bit for gap/margin if we want them to fit perfectly inside without wrap? 
+            // Actually, let's keep it simple: percentage width.
+            tile.style.width = `calc(${100 / denominator}% - 4px)`; // -4px for visual gap/border
+
+            tile.addEventListener('pointerdown', onPointerDown);
+            inventory.appendChild(tile);
+        }
+
+        function onPointerDown(e) {
+            if (e.target.parentElement === dropZone || !e.target.classList.contains('tile')) return;
+
+            e.preventDefault(); // Prevent scrolling/selection on touch
+
+            // If already active, ignore new touches (multi-touch prevention)
+            if (activeTile) return;
+
+            activeTile = e.target;
+            const rect = activeTile.getBoundingClientRect();
+
+            // Calculate offset from the top-left of the tile
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+
+            // Set fixed dimensions before moving to absolute to prevent resizing
+            activeTile.style.width = rect.width + 'px';
+            activeTile.style.height = rect.height + 'px';
+
+            // Position absolutely at current screen coordinates
+            activeTile.style.position = 'absolute';
+            activeTile.style.left = rect.left + 'px';
+            activeTile.style.top = rect.top + 'px';
+            activeTile.style.zIndex = 1000;
+
+            // Move to body so it floats over everything without clipping
+            document.body.appendChild(activeTile);
+
+            // Capture the pointer to track movement even if mouse leaves window or moves fast
+            activeTile.setPointerCapture(e.pointerId);
+
+            activeTile.addEventListener('pointermove', onPointerMove);
+            activeTile.addEventListener('pointerup', onPointerUp);
+            activeTile.addEventListener('pointercancel', onPointerUp); // Handle interruptions
+        }
+
+        function onPointerMove(e) {
+            if (!activeTile) return;
+            e.preventDefault();
+
+            const x = e.clientX - offset.x;
+            const y = e.clientY - offset.y;
+
+            activeTile.style.left = x + 'px';
+            activeTile.style.top = y + 'px';
+
+            // Visual feedback
+            // Get center of the tile for better hit testing
+            const tileRect = activeTile.getBoundingClientRect();
+            const tileCenterX = tileRect.left + tileRect.width / 2;
+            const tileCenterY = tileRect.top + tileRect.height / 2;
+
+            const zoneRect = dropZone.getBoundingClientRect();
+
+            // Check if center of tile is inside drop zone
+            if (tileCenterX > zoneRect.left && tileCenterX < zoneRect.right &&
+                tileCenterY > zoneRect.top && tileCenterY < zoneRect.bottom) {
+
+                const val = parseFloat(activeTile.dataset.value);
+                // Allow dropping if space permits (epsilon check included in logic later, just visual here)
+                if (currentTotal + val <= 1.001) {
+                    dropZone.classList.add('over');
+                } else {
+                    // Maybe show "full" styling? For now just default behavior
+                    dropZone.classList.remove('over');
+                }
+            } else {
+                dropZone.classList.remove('over');
+            }
+        }
+
+        function onPointerUp(e) {
+            if (!activeTile) return;
+
+            if (activeTile.hasPointerCapture(e.pointerId)) {
+                activeTile.releasePointerCapture(e.pointerId);
+            }
+            activeTile.removeEventListener('pointermove', onPointerMove);
+            activeTile.removeEventListener('pointerup', onPointerUp);
+            activeTile.removeEventListener('pointercancel', onPointerUp);
+
+            const tileRect = activeTile.getBoundingClientRect();
+            const tileCenterX = tileRect.left + tileRect.width / 2;
+            const tileCenterY = tileRect.top + tileRect.height / 2;
+            const zoneRect = dropZone.getBoundingClientRect();
+            const val = parseFloat(activeTile.dataset.value);
+
+            // Check drop
+            if (tileCenterX > zoneRect.left && tileCenterX < zoneRect.right &&
+                tileCenterY > zoneRect.top && tileCenterY < zoneRect.bottom) {
+
+                if (currentTotal + val <= 1.001) {
+                    addToBar(activeTile, val);
+                } else {
+                    resetTile(activeTile);
+                    showError();
+                }
+            } else {
+                resetTile(activeTile);
+            }
+
+            activeTile = null;
+            dropZone.classList.remove('over');
+        }
+
+        function addToBar(tile, val) {
+            currentTotal += val;
+
+            // Reset styles for static positioning in bar
+            tile.style.position = 'static';
+            tile.style.left = '';
+            tile.style.top = '';
+            tile.style.top = '';
+            // When in bar, we want exact percentage width to fill it nicely
+            // But we already set width in createTile... let's ensure it fits.
+            // If we used calc - 4px, let's stick with that or maybe refine for "in-bar".
+            // Actually, in bar we probably want them tight.
+            // Let's use flexbox in drop-zone to handle layout? No, absolute positioning logic for dropping was removed?
+            // Wait, drop logic appends to dropZone which is a flex container? YES.
+            // #drop-zone { display: flex; }
+            // So static positioning works fine.
+            // Let's force proper width for "in-bar" to close gaps?
+            // Or keep the gap for visual separation.
+            // Let's keep existing width.
+            tile.style.height = ''; // Let css handle it
+            tile.style.zIndex = '';
+
+            tile.classList.add('in-bar');
+            dropZone.appendChild(tile);
+
+            checkWin();
+        }
+
+        function resetTile(tile) {
+            // Reset styles for inventory
+            tile.style.position = 'relative'; // or static, flex handles it
+            tile.style.left = '';
+            tile.style.top = '';
+            // Maintain the proportionate width set in createTile
+            tile.style.height = '';
+            tile.style.zIndex = '';
+
+            inventory.appendChild(tile);
+        }
+
+        function showError() {
+            message.style.opacity = 1;
+            setTimeout(() => { message.style.opacity = 0; }, 2000);
+        }
+
+        function checkWin() {
+            // Using small epsilon for float precision
+            if (Math.abs(currentTotal - TARGET) < 0.01) {
+                dropZone.classList.add('winner');
+                createConfetti();
+                setTimeout(() => {
+                    document.getElementById('success-overlay').classList.add('visible');
+                }, 500);
+            }
+        }
+
+        function nextFraction() {
+            document.getElementById('success-overlay').classList.remove('visible');
+            initGame();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                c.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(c);
+
+                const animation = c.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                });
+                animation.onfinish = () => c.remove();
+            }
+        }
+
+        initGame();
+    </script>
+</body>
+
+</html>

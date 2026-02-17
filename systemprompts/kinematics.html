@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinematics Motion Lab | A-Level Physics</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --accent-p: #38bdf8;
+            /* Position - Blue */
+            --accent-v: #4ade80;
+            /* Velocity - Green */
+            --accent-a: #fb7185;
+            /* Acceleration - Red */
+            --text: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        header {
+            padding: 1rem 2rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        #main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            flex-grow: 1;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        /* Controls Panel */
+        #controls {
+            background: var(--panel);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .val-display {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--accent-p);
+            float: right;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 8px;
+            background: #334155;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* Simulation Area */
+        #sim-viewport {
+            display: grid;
+            grid-template-rows: 200px 1fr;
+            gap: 1rem;
+        }
+
+        canvas {
+            background: #000;
+            border-radius: 0.75rem;
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        button {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-play {
+            background: var(--accent-v);
+            color: #064e3b;
+        }
+
+        .btn-reset {
+            background: #64748b;
+            color: white;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        @media (max-width: 900px) {
+            #main-container {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+
+            #sim-viewport {
+                height: 800px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Kinematics Motion Lab</h1>
+        <div class="legend">
+            <span><span class="dot" style="background:var(--accent-p)"></span>Position (s)</span>
+            <span><span class="dot" style="background:var(--accent-v)"></span>Velocity (v)</span>
+            <span><span class="dot" style="background:var(--accent-a)"></span>Acceleration (a)</span>
+        </div>
+    </header>
+
+    <div id="main-container">
+        <aside id="controls">
+            <div class="control-group">
+                <label>Initial Velocity (u) <span id="u-val" class="val-display">0</span> m/s</label>
+                <input type="range" id="u-slider" min="-50" max="50" value="20" step="1">
+            </div>
+
+            <div class="control-group">
+                <label>Acceleration (a) <span id="a-val" class="val-display" style="color:var(--accent-a)">0</span>
+                    m/s²</label>
+                <input type="range" id="a-slider" min="-20" max="20" value="-5" step="0.5">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-play" id="play-btn">START</button>
+                <button class="btn-reset" id="reset-btn">RESET</button>
+            </div>
+
+            <div style="font-size: 0.8rem; line-height: 1.4; opacity: 0.6; margin-top: auto;">
+                <strong>Modelling Note:</strong> The particle follows the constant acceleration kinematic equation:
+                <p>$$s = ut + \frac{1}{2}at^2$$</p>
+            </div>
+        </aside>
+
+        <main id="sim-viewport">
+            <canvas id="worldCanvas"></canvas>
+            <canvas id="graphCanvas"></canvas>
+        </main>
+    </div>
+
+    <script>
+        const worldCanvas = document.getElementById('worldCanvas');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const wCtx = worldCanvas.getContext('2d');
+        const gCtx = graphCanvas.getContext('2d');
+
+        // State Variables
+        let isRunning = false;
+        let time = 0;
+        let history = []; // Stores {t, s, v, a}
+
+        // Physics Parameters (Adjusted for visual scale)
+        let u = 20;
+        let a = -5;
+        let s = 0;
+        let v = 0;
+        const PIXELS_PER_METER = 5;
+
+        // UI Elements
+        const uSlider = document.getElementById('u-slider');
+        const aSlider = document.getElementById('a-slider');
+        const uValDisp = document.getElementById('u-val');
+        const aValDisp = document.getElementById('a-val');
+        const playBtn = document.getElementById('play-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            updateValues();
+            requestAnimationFrame(loop);
+        }
+
+        function resize() {
+            worldCanvas.width = worldCanvas.offsetWidth * window.devicePixelRatio;
+            worldCanvas.height = worldCanvas.offsetHeight * window.devicePixelRatio;
+            graphCanvas.width = graphCanvas.offsetWidth * window.devicePixelRatio;
+            graphCanvas.height = graphCanvas.offsetHeight * window.devicePixelRatio;
+        }
+
+        function updateValues() {
+            u = parseFloat(uSlider.value);
+            a = parseFloat(aSlider.value);
+            uValDisp.innerText = u;
+            aValDisp.innerText = a;
+        }
+
+        uSlider.oninput = () => { updateValues(); if (!isRunning) resetSim(); };
+        aSlider.oninput = () => { updateValues(); if (!isRunning) resetSim(); };
+
+        playBtn.onclick = () => {
+            isRunning = !isRunning;
+            playBtn.innerText = isRunning ? "PAUSE" : "RESUME";
+            playBtn.style.background = isRunning ? "#facc15" : "#4ade80";
+        };
+
+        resetBtn.onclick = resetSim;
+
+        function resetSim() {
+            isRunning = false;
+            time = 0;
+            s = 0;
+            v = u;
+            history = [];
+            playBtn.innerText = "START";
+            playBtn.style.background = "#4ade80";
+        }
+
+        function loop() {
+            if (isRunning) {
+                const dt = 0.016; // Approx 60fps
+                time += dt;
+
+                // Kinematic Equations
+                v = u + a * time;
+                s = u * time + 0.5 * a * Math.pow(time, 2);
+
+                history.push({ t: time, s: s, v: v, a: a });
+
+                // Limit history to keep performance smooth
+                if (history.length > 1000) history.shift();
+            }
+
+            drawWorld();
+            drawGraphs();
+            requestAnimationFrame(loop);
+        }
+
+        function drawWorld() {
+            wCtx.clearRect(0, 0, worldCanvas.width, worldCanvas.height);
+            const centerX = worldCanvas.width / 2;
+            const centerY = worldCanvas.height / 2;
+
+            // Draw track
+            wCtx.strokeStyle = "#334155";
+            wCtx.lineWidth = 2;
+            wCtx.beginPath();
+            wCtx.moveTo(0, centerY + 40);
+            wCtx.lineTo(worldCanvas.width, centerY + 40);
+            wCtx.stroke();
+
+            // Particle (The Ball)
+            const posX = centerX + (s * PIXELS_PER_METER);
+
+            // Shadow
+            wCtx.fillStyle = "rgba(0,0,0,0.4)";
+            wCtx.beginPath();
+            wCtx.ellipse(posX, centerY + 40, 15, 5, 0, 0, Math.PI * 2);
+            wCtx.fill();
+
+            // Ball body
+            wCtx.fillStyle = varColor('--accent-p');
+            wCtx.beginPath();
+            wCtx.arc(posX, centerY, 20, 0, Math.PI * 2);
+            wCtx.fill();
+
+            // Velocity Vector Arrow
+            if (Math.abs(v) > 0.1) {
+                drawVector(posX, centerY, v * 2, varColor('--accent-v'), "v");
+            }
+            // Acceleration Vector Arrow
+            if (Math.abs(a) > 0.1) {
+                drawVector(posX, centerY - 25, a * 5, varColor('--accent-a'), "a");
+            }
+        }
+
+        function drawVector(x, y, length, color, label) {
+            wCtx.strokeStyle = color;
+            wCtx.fillStyle = color;
+            wCtx.lineWidth = 3;
+            wCtx.beginPath();
+            wCtx.moveTo(x, y);
+            wCtx.lineTo(x + length, y);
+            wCtx.stroke();
+            // Arrow head
+            const head = length > 0 ? 5 : -5;
+            wCtx.beginPath();
+            wCtx.moveTo(x + length, y);
+            wCtx.lineTo(x + length - head, y - 5);
+            wCtx.lineTo(x + length - head, y + 5);
+            wCtx.fill();
+        }
+
+        function drawGraphs() {
+            gCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+            if (history.length < 2) return;
+
+            const margin = 40;
+            const h = graphCanvas.height;
+            const w = graphCanvas.width;
+            const plotH = (h - (margin * 2)) / 3;
+
+            // Plotting Helper
+            const drawPlot = (type, color, index, min, max) => {
+                const top = margin + (index * plotH);
+                const bottom = top + plotH - 10;
+                const mid = (top + bottom) / 2;
+
+                // Axis
+                gCtx.strokeStyle = "#334155";
+                gCtx.beginPath();
+                gCtx.moveTo(margin, mid);
+                gCtx.lineTo(w - margin, mid);
+                gCtx.stroke();
+
+                // Data Path
+                gCtx.strokeStyle = color;
+                gCtx.lineWidth = 2;
+                gCtx.beginPath();
+
+                history.forEach((point, i) => {
+                    const x = margin + (i / history.length) * (w - margin * 2);
+                    let val = point[type];
+                    // Scale value to fit plot height
+                    let y = mid - (val * (plotH / (max * 2)));
+
+                    if (i === 0) gCtx.moveTo(x, y);
+                    else gCtx.lineTo(x, y);
+                });
+                gCtx.stroke();
+
+                // Label
+                gCtx.fillStyle = color;
+                gCtx.font = "bold 12px sans-serif";
+                gCtx.fillText(type.toUpperCase(), 10, mid + 5);
+            };
+
+            drawPlot('s', varColor('--accent-p'), 0, -200, 200);
+            drawPlot('v', varColor('--accent-v'), 1, -100, 100);
+            drawPlot('a', varColor('--accent-a'), 2, -50, 50);
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>
