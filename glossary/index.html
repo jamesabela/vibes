@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vibe Coding Glossary</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --text: #1a1a1a;
+            --muted: #666;
+            --accent: #ff8a00;
+            --line: #e0e0e0;
+            --surface: #ffffff;
+            --r: 14px;
+            --ok: #28a745;
+            --bad: #dc3545;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text)
+        }
+
+        header {
+            padding: 18px 16px;
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        button.tab {
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        button.tab:hover {
+            background: #f0f0f0;
+        }
+
+        button.active {
+            background: var(--accent) !important;
+            color: white !important;
+            border-color: var(--accent)
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .panelHeader {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #fafafa;
+        }
+
+        input,
+        select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--text)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+            text-align: left
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            background: #fafafa;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .card {
+            padding: 24px;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .big {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .box {
+            /* Container purely for perspective and layout space */
+            perspective: 1000px;
+            margin-bottom: 20px;
+            /* Ensure it has at least some size */
+            min-height: 120px;
+            cursor: pointer;
+        }
+
+        /* Flashcard Flip Logic */
+        .box-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+
+            /* Stack faces using grid */
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .box.flipped .box-inner {
+            transform: rotateY(180deg);
+        }
+
+        .box-front,
+        .box-back {
+            /* Occupy the same grid cell */
+            grid-row: 1;
+            grid-column: 1;
+            width: 100%;
+            /* Allow height to be determined by content, but match if one is taller */
+            min-height: 100%;
+
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+
+            /* Visuals now on the faces */
+            border: 1px solid var(--line);
+            background: #fafafa;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .box-back {
+            transform: rotateY(180deg);
+            background: #fff;
+            border: 1px solid var(--accent);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .good {
+            background: var(--ok);
+            color: white;
+            border: none;
+        }
+
+        .bad {
+            background: var(--bad);
+            color: white;
+            border: none;
+        }
+
+        .secondary {
+            background: #eee;
+            color: #555;
+            border: none;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Vibe Coding Glossary</h1>
+        <div class="tabs">
+            <button class="tab active" id="tabGlossary">Glossary</button>
+            <button class="tab" id="tabGame">Game</button>
+        </div>
+    </header>
+    <main>
+        <section id="glossaryView" class="panel">
+            <div class="panelHeader">
+                <input id="search" placeholder="Search...">
+                <select id="sort">
+                    <option value="az">A-Z</option>
+                    <option value="za">Z-A</option>
+                </select>
+                <div id="count"></div>
+            </div>
+            <div style="max-height:60vh;overflow:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Term</th>
+                            <th>Definition</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="gameView" class="panel hidden">
+            <div class="card">
+                <div class="big" id="term">Loading...</div>
+
+                <div class="box" id="flashcard">
+                    <div class="box-inner">
+                        <div class="box-front">
+                            <div style="color:var(--muted)">Tap card to reveal definition</div>
+                        </div>
+                        <div class="box-back">
+                            <div id="definition"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn bad" id="btnHard">Still learning</button>
+                    <button class="btn good" id="btnEasy">Got it!</button>
+                </div>
+
+                <div class="stats" id="stats">
+                    <span id="statBox1">Box 1: 0</span>
+                    <span id="statBox2">Box 2: 0</span>
+                    <span id="statBox3">Box 3: 0</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- Data & State ---
+        let GLOSSARY = [];
+        const STORAGE_KEY = 'vibe_glossary_state';
+
+        // Leitner Boxes: array of term strings (or indices)
+        // Box 1: Daily/Hard (Default)
+        // Box 2: Weekly/Medium
+        // Box 3: Monthly/Easy
+        let boxes = { 1: [], 2: [], 3: [] };
+        let currentTerm = null;
+        let isFlipped = false;
+
+        // --- Initialization ---
+        fetch('glossary.json')
+            .then(res => res.json())
+            .then(data => {
+                GLOSSARY = data;
+                loadProgress();
+                renderGlossary();
+                nextCard();
+            });
+
+        // --- DOM Elements ---
+        const body = document.getElementById('body');
+        const search = document.getElementById('search');
+        const sort = document.getElementById('sort');
+        const count = document.getElementById('count');
+
+        const tabGlossary = document.getElementById('tabGlossary');
+        const tabGame = document.getElementById('tabGame');
+        const glossaryView = document.getElementById('glossaryView');
+        const gameView = document.getElementById('gameView');
+
+        const termEl = document.getElementById('term');
+        const defEl = document.getElementById('definition');
+        const flashcard = document.getElementById('flashcard');
+        const btnHard = document.getElementById('btnHard');
+        const btnEasy = document.getElementById('btnEasy');
+        const statBox1 = document.getElementById('statBox1');
+        const statBox2 = document.getElementById('statBox2');
+        const statBox3 = document.getElementById('statBox3');
+
+        // --- Glossary View Logic ---
+        function renderGlossary() {
+            let data = [...GLOSSARY];
+            const q = search.value.toLowerCase();
+            if (q) data = data.filter(x => x.term.toLowerCase().includes(q) || x.definition.toLowerCase().includes(q));
+
+            if (sort.value === 'az') data.sort((a, b) => a.term.localeCompare(b.term));
+            if (sort.value === 'za') data.sort((a, b) => b.term.localeCompare(a.term));
+
+            body.innerHTML = data.map(x => `
+                <tr>
+                    <td><strong>${x.term}</strong></td>
+                    <td style="line-height:1.5; color:#444">${x.definition}</td>
+                </tr>`).join('');
+            count.textContent = data.length + ' terms';
+
+            // Auto-resize search focus
+            if (q) glossaryView.classList.remove('hidden');
+        }
+
+        search.addEventListener('input', renderGlossary);
+        sort.addEventListener('change', renderGlossary);
+
+        // --- Tab Switching ---
+        tabGlossary.onclick = () => {
+            glossaryView.classList.remove('hidden');
+            gameView.classList.add('hidden');
+            tabGlossary.classList.add('active');
+            tabGame.classList.remove('active');
+        };
+        tabGame.onclick = () => {
+            gameView.classList.remove('hidden');
+            glossaryView.classList.add('hidden');
+            tabGame.classList.add('active');
+            tabGlossary.classList.remove('active');
+        };
+
+        // --- Spaced Repetition Logic ---
+
+        function loadProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                boxes = JSON.parse(saved);
+                // Validate boxes against current glossary terms
+                // (Optional: remove terms that no longer exist)
+            } else {
+                // Initial state: All terms in Box 1
+                resetProgress();
+            }
+            updateStats();
+        }
+
+        function saveProgress() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes));
+            updateStats();
+        }
+
+        function resetProgress() {
+            boxes = { 1: GLOSSARY.map(g => g.term), 2: [], 3: [] };
+            saveProgress();
+        }
+
+        function updateStats() {
+            statBox1.textContent = `Box 1: ${boxes[1].length}`;
+            statBox2.textContent = `Box 2: ${boxes[2].length}`;
+            statBox3.textContent = `Box 3: ${boxes[3].length}`;
+        }
+
+        function nextCard() {
+            if (GLOSSARY.length === 0) return;
+
+            // Reset UI
+            isFlipped = false;
+            flashcard.classList.remove('flipped');
+
+            // Selection Strategy (Weighted)
+            // 70% chance to pick from Box 1 (if not empty)
+            // 20% chance to pick from Box 2
+            // 10% chance to pick from Box 3
+            // Fallback: If preferred box is empty, pick from any available.
+
+            const rand = Math.random();
+            let chosenBox = 1;
+
+            if (boxes[1].length > 0) {
+                if (rand > 0.3) chosenBox = 1;
+                else if (rand > 0.1 && boxes[2].length > 0) chosenBox = 2;
+                else if (boxes[3].length > 0) chosenBox = 3;
+            } else if (boxes[2].length > 0) {
+                if (rand > 0.4) chosenBox = 2;
+                else if (boxes[3].length > 0) chosenBox = 3;
+            } else {
+                chosenBox = 3;
+            }
+
+            // If everything is empty (shouldn't happen unless glossary empty), reset
+            if (boxes[1].length + boxes[2].length + boxes[3].length === 0) {
+                resetProgress();
+                chosenBox = 1;
+            }
+
+            // Pick random term from chosen box
+            const boxList = boxes[chosenBox];
+            if (boxList.length === 0) {
+                // Fallback to finding ANY box with items
+                if (boxes[1].length) chosenTermString = boxes[1][0]; // Simplify fallback
+                // Real fallback logic is handled by flows above, but just in case:
+                chosenTermString = GLOSSARY[0].term;
+            } else {
+                chosenTermString = boxList[Math.floor(Math.random() * boxList.length)];
+            }
+
+            // Find full object
+            currentTerm = GLOSSARY.find(g => g.term === chosenTermString);
+
+            // Render
+            if (currentTerm) {
+                termEl.textContent = currentTerm.term;
+                defEl.textContent = currentTerm.definition;
+            }
+        }
+
+        function handleAnswer(quality) {
+            if (!currentTerm) return;
+
+            // Find current box
+            let currentBox = 1;
+            if (boxes[2].includes(currentTerm.term)) currentBox = 2;
+            if (boxes[3].includes(currentTerm.term)) currentBox = 3;
+
+            // Remove from current
+            boxes[currentBox] = boxes[currentBox].filter(t => t !== currentTerm.term);
+
+            // Move Logic
+            if (quality === 'good') {
+                // Promote
+                const nextBox = Math.min(3, currentBox + 1);
+                boxes[nextBox].push(currentTerm.term);
+            } else {
+                // Demote (Back to 1)
+                boxes[1].push(currentTerm.term);
+            }
+
+            saveProgress();
+            nextCard();
+        }
+
+        // --- Event Listeners ---
+        flashcard.onclick = () => {
+            isFlipped = !isFlipped;
+            if (isFlipped) flashcard.classList.add('flipped');
+            else flashcard.classList.remove('flipped');
+        };
+
+        btnEasy.onclick = () => handleAnswer('good');
+        btnHard.onclick = () => handleAnswer('bad');
+
+        // Initial check for hash to open Glossary or Game directly
+        if (window.location.hash === '#game') tabGame.click();
+
+    </script>
+</body>
+
+</html>

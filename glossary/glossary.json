@@ -1,0 +1,774 @@
+[
+    {
+        "term": "Accessibility Mode",
+        "definition": "Design adjustments such as font choice, contrast, spacing, and reduced motion to support diverse learners."
+    },
+    {
+        "term": "Agent",
+        "definition": "An AI system that can take actions, such as editing files or running commands, not just generating text."
+    },
+    {
+        "term": "Agentic Environment",
+        "definition": "A development tool where the AI can read files, modify code, and execute commands."
+    },
+    {
+        "term": "Agentic IDE",
+        "definition": "An IDE that includes an agent which can perform tasks across files and tools."
+    },
+    {
+        "term": "AI Hallucination",
+        "definition": "When an AI produces confident output that is incorrect or unsupported by the project context."
+    },
+    {
+        "term": "AI Studio",
+        "definition": "Google AI Studio, used for experimenting with Gemini models and testing prompts."
+    },
+    {
+        "term": "Alignment Constraint",
+        "definition": "A rule in a prompt that forces output to match curriculum, platform, or safety requirements."
+    },
+    {
+        "term": "Antigravity",
+        "definition": "An agentic AI-powered IDE used in the book for building, testing, and iterating full projects."
+    },
+    {
+        "term": "Antigravity Permissions",
+        "definition": "Settings that control what Antigravity is allowed to read, write, run, or access."
+    },
+    {
+        "term": "API",
+        "definition": "Application Programming Interface. A structured way for software to communicate."
+    },
+    {
+        "term": "API Key",
+        "definition": "A secret token used to authenticate requests to an API. It should never be published."
+    },
+    {
+        "term": "App Shell",
+        "definition": "The core layout of an app (navigation, header, panels) that stays consistent across screens."
+    },
+    {
+        "term": "Arctic Reading Tools",
+        "definition": "A suite of browser-based literacy tools developed using vibe coding principles."
+    },
+    {
+        "term": "Asset",
+        "definition": "A file used by the project such as an image, audio clip, font, or sprite sheet."
+    },
+    {
+        "term": "Asset Folder",
+        "definition": "A directory containing images, sounds, fonts, and other media used in a project."
+    },
+    {
+        "term": "Authentication",
+        "definition": "Verifying identity, for example via login, tokens, or single sign-on."
+    },
+    {
+        "term": "Authorisation",
+        "definition": "Deciding what an authenticated user is allowed to do."
+    },
+    {
+        "term": "Auto-save",
+        "definition": "Saving changes automatically to reduce data loss during editing."
+    },
+    {
+        "term": "Backward Design",
+        "definition": "Planning a tool starting from learning objectives rather than technical features."
+    },
+    {
+        "term": "Baseline Prototype",
+        "definition": "A minimal working version that proves the core idea before adding extras."
+    },
+    {
+        "term": "Benchmark Prompt",
+        "definition": "A fixed prompt used repeatedly to compare model outputs across iterations or tools."
+    },
+    {
+        "term": "Binary Choice Screen",
+        "definition": "A two-option interaction pattern that is often overused in quiz-style tools."
+    },
+    {
+        "term": "Boilerplate",
+        "definition": "Standard starter code that sets up structure but does not provide the main learning value."
+    },
+    {
+        "term": "Browser Canvas",
+        "definition": "The HTML5 canvas element used for drawing interactive graphics and animations."
+    },
+    {
+        "term": "Browser-only App",
+        "definition": "An app built entirely with HTML, CSS, and JavaScript, with no server-side code."
+    },
+    {
+        "term": "Browser Game Loop",
+        "definition": "A repeated update-render cycle that keeps a game running smoothly."
+    },
+    {
+        "term": "Bug",
+        "definition": "A mistake in code that causes incorrect behaviour."
+    },
+    {
+        "term": "Build Iteration",
+        "definition": "One cycle of prompt, generate, test, and refine."
+    },
+    {
+        "term": "Build Tool",
+        "definition": "A tool that bundles and optimises code for deployment, such as Vite."
+    },
+    {
+        "term": "Bundling",
+        "definition": "Combining many files into fewer files for faster loading and simpler deployment."
+    },
+    {
+        "term": "Canva Code",
+        "definition": "A Canva feature that generates interactive web code from prompts."
+    },
+    {
+        "term": "Canvas Workflow",
+        "definition": "Using a structured drafting space to iteratively refine chapters or code."
+    },
+    {
+        "term": "ChatGPT",
+        "definition": "A large language model interface used for planning, debugging, and generating code."
+    },
+    {
+        "term": "ChatGPT Codex",
+        "definition": "OpenAI’s code-focused model family designed for programming tasks."
+    },
+    {
+        "term": "Claude",
+        "definition": "An AI model often used for reasoning, long-form writing, and careful refinement."
+    },
+    {
+        "term": "Client",
+        "definition": "A user device or browser that requests resources from a server."
+    },
+    {
+        "term": "Client-side",
+        "definition": "Code that runs in the user’s browser rather than on a server."
+    },
+    {
+        "term": "Command Line",
+        "definition": "A text-based interface for running tools and commands."
+    },
+    {
+        "term": "Command Palette",
+        "definition": "A searchable menu in many editors for running actions quickly."
+    },
+    {
+        "term": "Component",
+        "definition": "A reusable part of a UI or system with a single clear purpose."
+    },
+    {
+        "term": "Constraint-based Prompting",
+        "definition": "Writing prompts that include explicit limits and must-have rules."
+    },
+    {
+        "term": "Context Window",
+        "definition": "The amount of information a model can consider in a single response."
+    },
+    {
+        "term": "Cookie",
+        "definition": "Small data stored in a browser, often used for sessions or preferences."
+    },
+    {
+        "term": "Copy-paste Embed",
+        "definition": "Embedding by copying full HTML into a platform’s embed feature."
+    },
+    {
+        "term": "CORS",
+        "definition": "Cross-Origin Resource Sharing. Browser rules controlling whether one site can fetch resources from another."
+    },
+    {
+        "term": "Cross-device Testing",
+        "definition": "Testing across desktop, tablet, and mobile to confirm layout and interaction."
+    },
+    {
+        "term": "CSV",
+        "definition": "Comma-Separated Values. A common format for tabular data."
+    },
+    {
+        "term": "CSV Dashboard",
+        "definition": "A browser dashboard that loads data from a CSV and renders it visually."
+    },
+    {
+        "term": "Curriculum Alignment",
+        "definition": "Designing features so they directly support specified learning objectives."
+    },
+    {
+        "term": "Cybersecurity",
+        "definition": "Protecting systems and data from digital threats and misuse."
+    },
+    {
+        "term": "Data Binding",
+        "definition": "Connecting data values directly to UI elements so updates appear automatically."
+    },
+    {
+        "term": "Data-driven Interface",
+        "definition": "An interface where content changes based on structured data rather than hardcoded text."
+    },
+    {
+        "term": "Data Logic Mixing",
+        "definition": "A common AI mistake where data and program behaviour get merged in confusing ways."
+    },
+    {
+        "term": "Data Modularity",
+        "definition": "Keeping content in data files and behaviour in code files."
+    },
+    {
+        "term": "Data Privacy",
+        "definition": "Handling user data responsibly, including minimising collection and limiting exposure."
+    },
+    {
+        "term": "Debug Pass",
+        "definition": "A focused iteration aimed at identifying and fixing specific problems."
+    },
+    {
+        "term": "Debugging",
+        "definition": "Finding the cause of a problem and fixing it."
+    },
+    {
+        "term": "Dependency",
+        "definition": "External code a project relies on, such as a library or framework."
+    },
+    {
+        "term": "Deployment",
+        "definition": "Publishing a project so it can be accessed by others."
+    },
+    {
+        "term": "Deployment Strategy",
+        "definition": "A plan for how a project will be hosted and shared."
+    },
+    {
+        "term": "Design Constraint",
+        "definition": "A rule that limits scope, such as single-file output or no external libraries."
+    },
+    {
+        "term": "Dev Loop",
+        "definition": "The repeated cycle of prompt, generate, test, and refine."
+    },
+    {
+        "term": "Directory",
+        "definition": "A folder in a file system used to organise project files."
+    },
+    {
+        "term": "DOM",
+        "definition": "Document Object Model. The structured representation of a webpage."
+    },
+    {
+        "term": "DOM Manipulation",
+        "definition": "Updating page elements using JavaScript."
+    },
+    {
+        "term": "Drag Interaction",
+        "definition": "Touch-friendly interaction where objects can be moved with pointer input."
+    },
+    {
+        "term": "Embedding",
+        "definition": "Placing one web tool inside another platform such as Google Sites or an LMS."
+    },
+    {
+        "term": "Embed by URL",
+        "definition": "Embedding a hosted webpage using a link rather than pasting HTML."
+    },
+    {
+        "term": "Embed Code",
+        "definition": "HTML that can be pasted into another platform to display a tool."
+    },
+    {
+        "term": "Encryption",
+        "definition": "Encoding data so it cannot be read without the correct key."
+    },
+    {
+        "term": "Endpoint",
+        "definition": "A URL where an API receives requests."
+    },
+    {
+        "term": "Error Surface",
+        "definition": "The visible behaviour that shows a bug exists, such as a blank screen or broken layout."
+    },
+    {
+        "term": "Escaping",
+        "definition": "Replacing special characters so they are safe to display or store."
+    },
+    {
+        "term": "Ethical Deployment",
+        "definition": "Publishing tools responsibly with attention to safety, privacy, and misuse."
+    },
+    {
+        "term": "Event Listener",
+        "definition": "JavaScript code that runs when an event happens, such as click or pointerdown."
+    },
+    {
+        "term": "Fetch",
+        "definition": "A browser API used to request data or files such as JSON."
+    },
+    {
+        "term": "File Modularity",
+        "definition": "Splitting a project into small files so changes stay local and easier to review."
+    },
+    {
+        "term": "Firewall",
+        "definition": "A system that filters network traffic to block unwanted access."
+    },
+    {
+        "term": "First Draft",
+        "definition": "A working version that prioritises function over polish."
+    },
+    {
+        "term": "Front-end",
+        "definition": "The part of a tool users interact with, usually built with HTML, CSS, and JavaScript."
+    },
+    {
+        "term": "Front-End Logic",
+        "definition": "Interactive behaviour implemented in JavaScript."
+    },
+    {
+        "term": "Gemini",
+        "definition": "Google’s multimodal large language model used for reasoning, coding, and planning."
+    },
+    {
+        "term": "Gemini Prompting",
+        "definition": "Writing prompts in a way that suits Gemini’s strengths, such as structured constraints and examples."
+    },
+    {
+        "term": "Git",
+        "definition": "A version control system for tracking changes over time."
+    },
+    {
+        "term": "Git Commit",
+        "definition": "A saved snapshot of a project’s state in Git."
+    },
+    {
+        "term": "GitHub",
+        "definition": "A platform for hosting Git repositories and collaborating."
+    },
+    {
+        "term": "GitHub Pages",
+        "definition": "A static hosting service for websites stored in GitHub repositories."
+    },
+    {
+        "term": "Google Opal",
+        "definition": "A visual tool for building AI workflows using blocks and connections."
+    },
+    {
+        "term": "Google Sites Embed",
+        "definition": "Embedding content into Google Sites using either HTML embed or by URL."
+    },
+    {
+        "term": "Graph Renderer",
+        "definition": "A component that draws charts or graphs from structured data."
+    },
+    {
+        "term": "Hallucination Check",
+        "definition": "A deliberate review step where claims and code are verified against reality."
+    },
+    {
+        "term": "Hashing",
+        "definition": "Converting data into a fixed-length value, often used for integrity checks."
+    },
+    {
+        "term": "Hosting",
+        "definition": "Providing a place on the internet or local network where a tool can be accessed."
+    },
+    {
+        "term": "Hosting Model",
+        "definition": "The chosen approach for publishing, such as static hosting, school intranet, or LMS embed."
+    },
+    {
+        "term": "HTML",
+        "definition": "HyperText Markup Language. The structure of web pages."
+    },
+    {
+        "term": "HTML Structure",
+        "definition": "The semantic layout of elements, headings, and containers in a webpage."
+    },
+    {
+        "term": "HTTP",
+        "definition": "A protocol for transferring web content."
+    },
+    {
+        "term": "HTTPS",
+        "definition": "HTTP with encryption, used to protect data in transit."
+    },
+    {
+        "term": "Ice Maze",
+        "definition": "A Phaser-based educational game developed in the project using vibe coding."
+    },
+    {
+        "term": "IDE",
+        "definition": "Integrated Development Environment. A tool for writing, running, and debugging code."
+    },
+    {
+        "term": "Intranet Hosting",
+        "definition": "Hosting a tool so it is accessible only on a school or local network."
+    },
+    {
+        "term": "Input Validation",
+        "definition": "Checking user input to prevent errors or abuse."
+    },
+    {
+        "term": "Instruction Hierarchy",
+        "definition": "The way system prompts, user prompts, and constraints influence model output."
+    },
+    {
+        "term": "Interaction Feedback",
+        "definition": "A visible response to user actions, such as highlights, sounds, or animations."
+    },
+    {
+        "term": "Iteration",
+        "definition": "Repeating a process to improve a tool based on testing and feedback."
+    },
+    {
+        "term": "Iterative Prompting",
+        "definition": "Improving output by adjusting prompts and rerunning generation."
+    },
+    {
+        "term": "JavaScript",
+        "definition": "A programming language used to add interactivity to web pages."
+    },
+    {
+        "term": "JavaScript Runtime",
+        "definition": "The environment that executes JavaScript, such as a browser or Node.js."
+    },
+    {
+        "term": "JSON",
+        "definition": "JavaScript Object Notation. A common format for structured data."
+    },
+    {
+        "term": "Key Stage Alignment",
+        "definition": "Designing tools to match England curriculum stages such as KS2 or KS3."
+    },
+    {
+        "term": "Latency",
+        "definition": "Delay between an action and a response, often noticed in network calls."
+    },
+    {
+        "term": "Library",
+        "definition": "Reusable code that provides features without writing everything from scratch."
+    },
+    {
+        "term": "Light Ray Simulator",
+        "definition": "A curriculum-aligned tool that models straight-line travel and reflection of light."
+    },
+    {
+        "term": "Live Server",
+        "definition": "A local development server that refreshes changes automatically."
+    },
+    {
+        "term": "Localhost",
+        "definition": "A local address that points to your own computer."
+    },
+    {
+        "term": "Local IP Mode",
+        "definition": "A setting that allows other devices on the same network to access your local server."
+    },
+    {
+        "term": "Logic Block",
+        "definition": "A visual programming unit used in tools like Google Opal."
+    },
+    {
+        "term": "Low-code",
+        "definition": "Building software with minimal hand-written code, often using tools or templates."
+    },
+    {
+        "term": "LMS",
+        "definition": "Learning Management System. A platform used to distribute learning resources."
+    },
+    {
+        "term": "Manifest",
+        "definition": "A file that describes a web app, often used for PWAs."
+    },
+    {
+        "term": "Markdown",
+        "definition": "A simple format for writing structured text such as chapters and notes."
+    },
+    {
+        "term": "Markdown Draft",
+        "definition": "Using Markdown to draft chapters before final formatting."
+    },
+    {
+        "term": "Modular Architecture",
+        "definition": "Designing systems where each part performs one clear function."
+    },
+    {
+        "term": "Modularity",
+        "definition": "Breaking a project into smaller parts to make it easier to maintain."
+    },
+    {
+        "term": "Model Switch",
+        "definition": "Changing which AI model is used for a task to improve quality or reduce cost."
+    },
+    {
+        "term": "Multi-modal",
+        "definition": "AI that can handle multiple inputs such as text, images, or audio."
+    },
+    {
+        "term": "Network Permission",
+        "definition": "Access settings that control whether tools can reach the internet or local network."
+    },
+    {
+        "term": "Node.js",
+        "definition": "A JavaScript runtime used outside the browser."
+    },
+    {
+        "term": "No-Quiz Philosophy",
+        "definition": "Designing learning through exploration rather than multiple choice questions."
+    },
+    {
+        "term": "Normal Line",
+        "definition": "In reflection diagrams, a line perpendicular to the surface at the point of contact."
+    },
+    {
+        "term": "OpenDyslexic",
+        "definition": "A font often used to support readability for some learners."
+    },
+    {
+        "term": "OpenDyslexic Integration",
+        "definition": "Adding OpenDyslexic as an optional font setting for accessibility."
+    },
+    {
+        "term": "Password Manager",
+        "definition": "A tool that stores and generates strong passwords securely."
+    },
+    {
+        "term": "Patch",
+        "definition": "A small update that fixes a bug or vulnerability."
+    },
+    {
+        "term": "Permission Scope",
+        "definition": "A clear description of what a tool is allowed to access or modify."
+    },
+    {
+        "term": "Phaser",
+        "definition": "A JavaScript framework for making 2D browser games."
+    },
+    {
+        "term": "Phishing",
+        "definition": "A scam that tricks people into giving away sensitive information."
+    },
+    {
+        "term": "Pointer Events",
+        "definition": "A browser API that supports mouse, touch, and stylus input consistently."
+    },
+    {
+        "term": "Privacy by Design",
+        "definition": "Building tools that minimise data collection and protect users by default."
+    },
+    {
+        "term": "Prompt",
+        "definition": "Text instructions given to an AI system."
+    },
+    {
+        "term": "Prompt Block",
+        "definition": "A clearly separated section of instructions used for consistent prompting."
+    },
+    {
+        "term": "Prompt Contract",
+        "definition": "Explicit constraints that define what the AI must and must not do."
+    },
+    {
+        "term": "Prompt Discipline",
+        "definition": "Keeping prompts clear, specific, and testable to reduce errors."
+    },
+    {
+        "term": "Prompt Refinement",
+        "definition": "Improving AI output quality through iterative adjustments."
+    },
+    {
+        "term": "Prompt Role Definition",
+        "definition": "Defining the AI’s role, audience, and output format within the prompt."
+    },
+    {
+        "term": "Prototype",
+        "definition": "A working model used to test an idea quickly."
+    },
+    {
+        "term": "Progressive Web App (PWA)",
+        "definition": "A web app that can behave like a native app, including install prompts and offline support."
+    },
+    {
+        "term": "Rate Limit",
+        "definition": "A restriction on how many requests can be made in a time period."
+    },
+    {
+        "term": "Refactoring",
+        "definition": "Improving code structure without changing behaviour."
+    },
+    {
+        "term": "Reflection Law",
+        "definition": "Angle of incidence equals angle of reflection."
+    },
+    {
+        "term": "Regression",
+        "definition": "A new bug introduced by a change that breaks previously working behaviour."
+    },
+    {
+        "term": "Responsive Layout",
+        "definition": "A layout that adapts to different screen sizes."
+    },
+    {
+        "term": "Risk Profile",
+        "definition": "The level of security exposure based on permissions, data sensitivity, and environment."
+    },
+    {
+        "term": "Role-based Access",
+        "definition": "Permissions assigned based on roles such as student, teacher, or admin."
+    },
+    {
+        "term": "Sandbox",
+        "definition": "A restricted environment for testing code safely."
+    },
+    {
+        "term": "Safeguarding",
+        "definition": "Policies and practices that protect children from harm, including online risk."
+    },
+    {
+        "term": "School Network Testing",
+        "definition": "Testing across multiple devices on the same WiFi to confirm access and performance."
+    },
+    {
+        "term": "Script Tag",
+        "definition": "The HTML element used to include JavaScript in a webpage."
+    },
+    {
+        "term": "Secure Defaults",
+        "definition": "Settings that choose safer options by default, reducing accidental risk."
+    },
+    {
+        "term": "Secure Settings",
+        "definition": "Limiting permissions and controlling access to reduce cybersecurity risk."
+    },
+    {
+        "term": "Separation of Concerns",
+        "definition": "Keeping data, logic, and presentation separate so projects stay maintainable."
+    },
+    {
+        "term": "Session",
+        "definition": "A temporary period of interaction, often tracked for logged-in users."
+    },
+    {
+        "term": "Shape Garden Builder",
+        "definition": "An Early Years, touch-friendly shape classification game."
+    },
+    {
+        "term": "Single-file App",
+        "definition": "A self-contained HTML file that includes CSS and JavaScript for portability."
+    },
+    {
+        "term": "Static Hosting",
+        "definition": "Hosting that serves fixed files like HTML, CSS, and JS without server-side processing."
+    },
+    {
+        "term": "Structured Data",
+        "definition": "Data organised in a predictable format such as JSON, CSV, or TSV."
+    },
+    {
+        "term": "System Prompt",
+        "definition": "A high-level instruction that defines AI behaviour, constraints, and tone."
+    },
+    {
+        "term": "Tab Manager",
+        "definition": "A UI controller that switches between views such as glossary and game."
+    },
+    {
+        "term": "Terminal",
+        "definition": "A program that provides access to the command line."
+    },
+    {
+        "term": "Terminal Command",
+        "definition": "A typed instruction executed in the terminal."
+    },
+    {
+        "term": "Test Device",
+        "definition": "A phone, tablet, or laptop used to verify behaviour in real conditions."
+    },
+    {
+        "term": "Threat Model",
+        "definition": "A simple description of what could go wrong and who might misuse a system."
+    },
+    {
+        "term": "Token",
+        "definition": "A chunk of text used by language models when processing prompts and outputs."
+    },
+    {
+        "term": "Token Limit",
+        "definition": "The maximum number of tokens a model can process at once."
+    },
+    {
+        "term": "Touch Optimisation",
+        "definition": "Designing UI and interactions for finger input, not a mouse."
+    },
+    {
+        "term": "TSV",
+        "definition": "Tab-Separated Values. A data format that often works well for spreadsheet exports."
+    },
+    {
+        "term": "UI Feedback",
+        "definition": "Immediate visual confirmation that an interaction was recognised."
+    },
+    {
+        "term": "UI",
+        "definition": "User Interface. The visible parts of a tool."
+    },
+    {
+        "term": "URL",
+        "definition": "A web address used to access resources."
+    },
+    {
+        "term": "User Testing",
+        "definition": "Observing how real users interact with a tool and improving it based on evidence."
+    },
+    {
+        "term": "UX",
+        "definition": "User Experience. How it feels to use a tool."
+    },
+    {
+        "term": "UX Refinement",
+        "definition": "Improving usability through changes to layout, feedback, and interaction patterns."
+    },
+    {
+        "term": "Version Control",
+        "definition": "Tools and practices for tracking file changes over time."
+    },
+    {
+        "term": "Vibe Coding",
+        "definition": "A development approach centred on intent, aesthetics, and rapid AI-assisted iteration."
+    },
+    {
+        "term": "Visual Logic",
+        "definition": "Representing logic using blocks or diagrams rather than code."
+    },
+    {
+        "term": "Vite",
+        "definition": "A fast JavaScript build tool commonly used for modern front-end projects."
+    },
+    {
+        "term": "Vulnerability",
+        "definition": "A weakness that could be exploited to compromise a system."
+    },
+    {
+        "term": "Web Embed Workflow",
+        "definition": "The process of placing a tool into another platform via embed code or URL."
+    },
+    {
+        "term": "WebGL",
+        "definition": "Browser technology for rendering hardware-accelerated graphics."
+    },
+    {
+        "term": "Web Worker",
+        "definition": "A browser feature for running code in the background without blocking the UI."
+    },
+    {
+        "term": "Workflow Loop",
+        "definition": "A repeated sequence of prompt, generate, test, and refine."
+    },
+    {
+        "term": "XSS",
+        "definition": "Cross-site scripting. A vulnerability where malicious scripts can run in a user’s browser."
+    },
+    {
+        "term": "Zero-trust Mindset",
+        "definition": "A security approach that assumes tools and connections should not be trusted by default."
+    }
+]
