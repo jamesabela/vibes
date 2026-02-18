@@ -252,6 +252,85 @@
             font-size: 14px;
             color: var(--muted);
         }
+
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .match-card {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .match-card.matched {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .match-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .match-card.flipped .match-inner {
+            transform: rotateY(180deg);
+        }
+
+        .match-front,
+        .match-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .match-front {
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .match-back {
+            background: white;
+            border: 2px solid var(--accent);
+            transform: rotateY(180deg);
+            color: var(--text);
+            overflow-y: auto;
+        }
+
+        .timer-bar {
+            height: 6px;
+            background: var(--line);
+            margin: 0 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.2s linear;
+        }
     </style>
 </head>
 
@@ -260,7 +339,8 @@
         <h1>Vibe Coding Glossary</h1>
         <div class="tabs">
             <button class="tab active" id="tabGlossary">Glossary</button>
-            <button class="tab" id="tabGame">Game</button>
+            <button class="tab" id="tabGame">Flashcards</button>
+            <button class="tab" id="tabMatch">Matching</button>
         </div>
     </header>
     <main>
@@ -313,6 +393,19 @@
                 </div>
             </div>
         </section>
+
+        <section id="matchView" class="panel hidden">
+            <div style="padding:16px; display:flex; justify-content:space-between; align-items:center">
+                <div id="matchTime">Time: 0s</div>
+                <button class="btn" id="btnRestartMatch">Restart Game</button>
+            </div>
+            <div class="match-grid" id="matchGrid"></div>
+            <div id="matchWin" class="card hidden">
+                <div class="big">🎉 All Matched!</div>
+                <div style="margin-bottom:12px">Time: <span id="finalTime"></span></div>
+                <button class="btn good" onclick="startMatchGame()">Play Again</button>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -320,13 +413,17 @@
         let GLOSSARY = [];
         const STORAGE_KEY = 'vibe_glossary_state';
 
-        // Leitner Boxes: array of term strings (or indices)
-        // Box 1: Daily/Hard (Default)
-        // Box 2: Weekly/Medium
-        // Box 3: Monthly/Easy
+        // Leitner Boxes: array of term strings
         let boxes = { 1: [], 2: [], 3: [] };
         let currentTerm = null;
         let isFlipped = false;
+
+        // Matching Game State
+        let matchCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let matchStartTime = 0;
+        let matchTimerInterval = null;
 
         // --- Initialization ---
         fetch('glossary.json')
@@ -346,9 +443,13 @@
 
         const tabGlossary = document.getElementById('tabGlossary');
         const tabGame = document.getElementById('tabGame');
+        const tabMatch = document.getElementById('tabMatch');
+
         const glossaryView = document.getElementById('glossaryView');
         const gameView = document.getElementById('gameView');
+        const matchView = document.getElementById('matchView');
 
+        // Flashcard Elements
         const termEl = document.getElementById('term');
         const defEl = document.getElementById('definition');
         const flashcard = document.getElementById('flashcard');
@@ -357,6 +458,13 @@
         const statBox1 = document.getElementById('statBox1');
         const statBox2 = document.getElementById('statBox2');
         const statBox3 = document.getElementById('statBox3');
+
+        // Match Game Elements
+        const matchGrid = document.getElementById('matchGrid');
+        const matchTime = document.getElementById('matchTime');
+        const btnRestartMatch = document.getElementById('btnRestartMatch');
+        const matchWin = document.getElementById('matchWin');
+        const finalTime = document.getElementById('finalTime');
 
         // --- Glossary View Logic ---
         function renderGlossary() {
@@ -374,37 +482,52 @@
                 </tr>`).join('');
             count.textContent = data.length + ' terms';
 
-            // Auto-resize search focus
-            if (q) glossaryView.classList.remove('hidden');
+            if (q) {
+                glossaryView.classList.remove('hidden');
+                gameView.classList.add('hidden');
+                matchView.classList.add('hidden');
+            }
         }
 
         search.addEventListener('input', renderGlossary);
         sort.addEventListener('change', renderGlossary);
 
         // --- Tab Switching ---
-        tabGlossary.onclick = () => {
-            glossaryView.classList.remove('hidden');
-            gameView.classList.add('hidden');
-            tabGlossary.classList.add('active');
-            tabGame.classList.remove('active');
-        };
-        tabGame.onclick = () => {
-            gameView.classList.remove('hidden');
+        function switchTab(view) {
             glossaryView.classList.add('hidden');
-            tabGame.classList.add('active');
-            tabGlossary.classList.remove('active');
-        };
+            gameView.classList.add('hidden');
+            matchView.classList.add('hidden');
 
-        // --- Spaced Repetition Logic ---
+            tabGlossary.classList.remove('active');
+            tabGame.classList.remove('active');
+            tabMatch.classList.remove('active');
+
+            if (view === 'glossary') {
+                glossaryView.classList.remove('hidden');
+                tabGlossary.classList.add('active');
+            }
+            if (view === 'game') {
+                gameView.classList.remove('hidden');
+                tabGame.classList.add('active');
+            }
+            if (view === 'match') {
+                matchView.classList.remove('hidden');
+                tabMatch.classList.add('active');
+                if (matchCards.length === 0) startMatchGame(); // Start if unused
+            }
+        }
+
+        tabGlossary.onclick = () => switchTab('glossary');
+        tabGame.onclick = () => switchTab('game');
+        tabMatch.onclick = () => switchTab('match');
+
+        // --- Spaced Repetition Logic (Flashcards) ---
 
         function loadProgress() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 boxes = JSON.parse(saved);
-                // Validate boxes against current glossary terms
-                // (Optional: remove terms that no longer exist)
             } else {
-                // Initial state: All terms in Box 1
                 resetProgress();
             }
             updateStats();
@@ -429,15 +552,8 @@
         function nextCard() {
             if (GLOSSARY.length === 0) return;
 
-            // Reset UI
             isFlipped = false;
             flashcard.classList.remove('flipped');
-
-            // Selection Strategy (Weighted)
-            // 70% chance to pick from Box 1 (if not empty)
-            // 20% chance to pick from Box 2
-            // 10% chance to pick from Box 3
-            // Fallback: If preferred box is empty, pick from any available.
 
             const rand = Math.random();
             let chosenBox = 1;
@@ -453,27 +569,23 @@
                 chosenBox = 3;
             }
 
-            // If everything is empty (shouldn't happen unless glossary empty), reset
             if (boxes[1].length + boxes[2].length + boxes[3].length === 0) {
                 resetProgress();
                 chosenBox = 1;
             }
 
-            // Pick random term from chosen box
             const boxList = boxes[chosenBox];
+            let chosenTermString;
+
             if (boxList.length === 0) {
-                // Fallback to finding ANY box with items
-                if (boxes[1].length) chosenTermString = boxes[1][0]; // Simplify fallback
-                // Real fallback logic is handled by flows above, but just in case:
-                chosenTermString = GLOSSARY[0].term;
+                if (boxes[1].length) chosenTermString = boxes[1][0];
+                else chosenTermString = GLOSSARY[0].term;
             } else {
                 chosenTermString = boxList[Math.floor(Math.random() * boxList.length)];
             }
 
-            // Find full object
             currentTerm = GLOSSARY.find(g => g.term === chosenTermString);
 
-            // Render
             if (currentTerm) {
                 termEl.textContent = currentTerm.term;
                 defEl.textContent = currentTerm.definition;
@@ -483,21 +595,16 @@
         function handleAnswer(quality) {
             if (!currentTerm) return;
 
-            // Find current box
             let currentBox = 1;
             if (boxes[2].includes(currentTerm.term)) currentBox = 2;
             if (boxes[3].includes(currentTerm.term)) currentBox = 3;
 
-            // Remove from current
             boxes[currentBox] = boxes[currentBox].filter(t => t !== currentTerm.term);
 
-            // Move Logic
             if (quality === 'good') {
-                // Promote
                 const nextBox = Math.min(3, currentBox + 1);
                 boxes[nextBox].push(currentTerm.term);
             } else {
-                // Demote (Back to 1)
                 boxes[1].push(currentTerm.term);
             }
 
@@ -505,7 +612,6 @@
             nextCard();
         }
 
-        // --- Event Listeners ---
         flashcard.onclick = () => {
             isFlipped = !isFlipped;
             if (isFlipped) flashcard.classList.add('flipped');
@@ -515,8 +621,102 @@
         btnEasy.onclick = () => handleAnswer('good');
         btnHard.onclick = () => handleAnswer('bad');
 
-        // Initial check for hash to open Glossary or Game directly
-        if (window.location.hash === '#game') tabGame.click();
+        // --- Matching Game Logic ---
+
+        function startMatchGame() {
+            // Reset State
+            matchWin.classList.add('hidden');
+            matchGrid.classList.remove('hidden');
+            matchedPairs = 0;
+            flippedCards = [];
+            clearInterval(matchTimerInterval);
+            matchStartTime = Date.now();
+            updateTimer();
+            matchTimerInterval = setInterval(updateTimer, 1000);
+
+            // Pick 6 random pairs
+            const shuffledGlossary = [...GLOSSARY].sort(() => 0.5 - Math.random());
+            const selection = shuffledGlossary.slice(0, 6);
+
+            // Create cards (Term + Def)
+            let cards = [];
+            selection.forEach(item => {
+                cards.push({ id: item.term, content: item.term, type: 'term' });
+                cards.push({ id: item.term, content: item.definition, type: 'def' });
+            });
+
+            // Shuffle display cards
+            cards.sort(() => 0.5 - Math.random());
+
+            matchCards = cards;
+            renderMatchGrid();
+        }
+
+        function updateTimer() {
+            const elap = Math.floor((Date.now() - matchStartTime) / 1000);
+            matchTime.textContent = `Time: ${elap}s`;
+        }
+
+        function renderMatchGrid() {
+            matchGrid.innerHTML = matchCards.map((card, idx) => `
+                <div class="match-card" onclick="flipMatchCard(${idx})" id="card-${idx}">
+                    <div class="match-inner">
+                        <div class="match-front">?</div>
+                        <div class="match-back" style="${card.type === 'term' ? 'font-weight:800;font-size:16px;' : 'font-size:13px;padding:8px'}">
+                            ${card.content}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.flipMatchCard = (idx) => {
+            // Prevent flipping if already matched, already flipped, or 2 cards active
+            const el = document.getElementById(`card-${idx}`);
+            if (el.classList.contains('matched')) return;
+            if (el.classList.contains('flipped')) return;
+            if (flippedCards.length >= 2) return;
+
+            // Flip
+            el.classList.add('flipped');
+            flippedCards.push({ idx, id: matchCards[idx].id });
+
+            // Check Match
+            if (flippedCards.length === 2) {
+                const c1 = flippedCards[0];
+                const c2 = flippedCards[1];
+
+                if (c1.id === c2.id) {
+                    // Match!
+                    setTimeout(() => {
+                        document.getElementById(`card-${c1.idx}`).classList.add('matched');
+                        document.getElementById(`card-${c2.idx}`).classList.add('matched');
+                        matchedPairs++;
+                        if (matchedPairs === 6) winMatchGame();
+                        flippedCards = [];
+                    }, 500);
+                } else {
+                    // No Match
+                    setTimeout(() => {
+                        document.getElementById(`card-${c1.idx}`).classList.remove('flipped');
+                        document.getElementById(`card-${c2.idx}`).classList.remove('flipped');
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        };
+
+        function winMatchGame() {
+            clearInterval(matchTimerInterval);
+            matchGrid.classList.add('hidden');
+            matchWin.classList.remove('hidden');
+            finalTime.textContent = matchTime.textContent.replace('Time: ', '');
+        }
+
+        btnRestartMatch.onclick = startMatchGame;
+
+        if (window.location.hash === '#game') switchTab('game');
+        if (window.location.hash === '#match') switchTab('match');
 
     </script>
 </body>
