@@ -3,333 +3,628 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Coding: From Idea to App at the Speed of Flow</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ice Maze - Teacher Guide</title>
     <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --card-hover: rgba(255, 255, 255, 0.1);
-            --accent: #818cf8;
-            --accent-glow: 0 0 20px rgba(129, 140, 248, 0.3);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-gradient);
-            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            overflow-x: hidden;
+            padding: 20px;
+            color: #333;
         }
 
-        /* Subtle animated background mesh */
-        .bg-mesh {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #29B6F6, #0288D1);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section h2 {
+            color: #0288D1;
+            font-size: 28px;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #29B6F6;
+            padding-bottom: 10px;
+        }
+
+        .section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .section ul {
+            margin-left: 25px;
+            line-height: 1.8;
+        }
+
+        .section ul ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+        }
+
+        .start-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #29B6F6, #0288D1);
+            color: white;
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(41, 182, 246, 0.4);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(41, 182, 246, 0.6);
+        }
+
+        .start-button:active {
+            transform: translateY(-1px);
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .divider {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 40px 0;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 3px solid #e2e8f0;
+        }
+
+        .footer-logo {
+            margin-bottom: 15px;
+        }
+
+        .footer-logo a {
+            color: #0288D1;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-logo a:hover {
+            color: #29B6F6;
+        }
+
+        .footer-notice {
+            font-size: 11px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+    </style>
+    <style>
+        /* Carousel Styles */
+        .carousel-scene {
+            width: 440px;
+            height: 320px;
+            margin: 40px auto;
+            perspective: 1400px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .carousel {
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background:
-                radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
-            animation: pulse 10s ease-in-out infinite alternate;
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: rotateCarousel 24s infinite linear;
         }
 
-        @keyframes pulse {
-            0% {
-                opacity: 0.5;
-                transform: scale(1);
-            }
-
-            100% {
-                opacity: 0.8;
-                transform: scale(1.1);
-            }
+        .carousel:hover {
+            animation-play-state: paused;
         }
 
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .glass-card:hover {
-            background: var(--card-hover);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        h1 {
-            background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 10px rgba(129, 140, 248, 0.2);
-        }
-
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            width: 100%;
-            max-width: 1200px;
-            /* Reduced from 1200px slightly just in case, but standard is fine */
-            padding: 20px;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.1);
+        .carousel-cell {
+            position: absolute;
+            width: 420px;
+            height: 300px;
+            left: 10px;
+            top: 10px;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            color: var(--accent);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            background: white;
+            border: 4px solid white;
         }
 
-        .glass-card:hover .icon-box {
-            background: var(--accent);
+        .carousel-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* 
+           7 items
+           Angle = 360 / 7 = 51.43 degrees
+           Radius calculation for width 420px:
+           r = (420 / 2) / tan(51.43 / 2) 
+           r = 210 / tan(25.7) = 210 / 0.481 = ~436px
+           We'll use translateZ(450px) for a bit of spacing
+        */
+        .carousel-cell:nth-child(1) {
+            transform: rotateY(0deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(2) {
+            transform: rotateY(51.4deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(3) {
+            transform: rotateY(102.8deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(4) {
+            transform: rotateY(154.2deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(5) {
+            transform: rotateY(205.6deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(6) {
+            transform: rotateY(257.0deg) translateZ(450px);
+        }
+
+        .carousel-cell:nth-child(7) {
+            transform: rotateY(308.4deg) translateZ(450px);
+        }
+
+        @keyframes rotateCarousel {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(-360deg);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .carousel-scene {
+                width: 300px;
+                height: 220px;
+                perspective: 1000px;
+            }
+
+            .carousel-cell {
+                width: 280px;
+                height: 200px;
+            }
+
+            /* Adjust Z for smaller radius */
+            /* 280px width -> r ~ 290px */
+            .carousel-cell:nth-child(1) {
+                transform: rotateY(0deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(2) {
+                transform: rotateY(51.4deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(3) {
+                transform: rotateY(102.8deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(4) {
+                transform: rotateY(154.2deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(5) {
+                transform: rotateY(205.6deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(6) {
+                transform: rotateY(257.0deg) translateZ(300px);
+            }
+
+            .carousel-cell:nth-child(7) {
+                transform: rotateY(308.4deg) translateZ(300px);
+            }
+        }
+    </style>
+    <style>
+        /* Slideshow Styles */
+        .slideshow-container {
+            max-width: 800px;
+            position: relative;
+            margin: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: #fff;
+        }
+
+        .mySlides {
+            display: none;
+            width: 100%;
+        }
+
+        .mySlides img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Next & previous buttons */
+        .prev,
+        .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
             color: white;
-            transform: scale(1.1) rotate(5deg);
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev:hover,
+        .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        /* Fading animation */
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: .4
+            }
+
+            to {
+                opacity: 1
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="bg-mesh"></div>
+    <div class="container">
+        <div class="header">
+            <h1>❄️ Ice Maze - Sentence Builder</h1>
+            <p>A Colourful Semantics Learning Game</p>
+        </div>
 
-    <main class="w-full max-w-6xl px-6 py-12 flex flex-col items-center">
-
-        <header class="text-center mb-16 animate-fade-in-down flex flex-col items-center">
-
-            <div class="mb-8 relative group">
-                <div
-                    class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200">
+        <div class="content">
+            <!-- Hero Image Slideshow -->
+            <div class="slideshow-container">
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide1.jpeg" alt="Ice Maze Intro 1">
                 </div>
-                <img src="Vibe Coding Book Cover.jpg" alt="Vibe Coding Book Cover"
-                    class="relative rounded-2xl shadow-2xl w-64 md:w-80 transform transition duration-500 group-hover:scale-[1.02]">
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide2.jpeg" alt="Ice Maze Intro 2">
+                </div>
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide3.jpeg" alt="Ice Maze Intro 3">
+                </div>
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide4.jpeg" alt="Ice Maze Intro 4">
+                </div>
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide5.jpeg" alt="Ice Maze Intro 5">
+                </div>
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide6.jpeg" alt="Ice Maze Intro 6">
+                </div>
+                <div class="mySlides fade">
+                    <img src="IceIntro/Slide7.jpeg" alt="Ice Maze Intro 7">
+                </div>
+
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            </div>
+            <br>
+
+            <!-- Action Buttons - Front and Center -->
+            <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 50px; flex-wrap: wrap;">
+                <a href="game.html" class="start-button" style="max-width: 300px;">
+                    <span class="emoji">🎮</span> Start Game
+                </a>
+                <a href="manipulatives.html" class="start-button"
+                    style="max-width: 300px; background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+                    <span class="emoji">🎨</span> Manipulatives Tool
+                </a>
             </div>
 
-            <h1 class="text-5xl md:text-7xl font-bold mb-4 tracking-tight leading-tight">
-                Vibe Coding
-            </h1>
-            <p class="text-xl md:text-2xl text-slate-300 font-light max-w-2xl mx-auto">
-                From Idea to App at the Speed of Flow
-            </p>
-        </header>
+            <!-- Divider -->
+            <hr class="divider">
 
-        <section class="nav-grid">
-
-            <a href="glossary/index.html" class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-indigo-300 transition-colors">Glossary</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Master the terminology of Vibe Coding. Definitions, concepts, and key terms explained.
+            <!-- Instructions and Information Below -->
+            <div class="section">
+                <h2>📚 About This Game</h2>
+                <p>Ice Maze is an educational game designed to help students learn sentence structure through the
+                    <strong>Colourful Semantics</strong> approach. Players navigate a maze, collecting words in the
+                    correct order to build grammatically correct sentences.
                 </p>
-            </a>
+            </div>
 
-            <a href="systemprompts/index.html" class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="4 17 10 11 4 5"></polyline>
-                        <line x1="12" y1="19" x2="20" y2="19"></line>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-purple-300 transition-colors">System Prompts</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    A curated collection of prompts to ignite your coding flow and streamline development.
+            <div class="section">
+                <h2>🎨 What is Colourful Semantics?</h2>
+                <p>Colourful Semantics is a teaching method that uses colours to help children understand sentence
+                    structure:</p>
+                <ul>
+                    <li><strong style="color: #FFA500;">WHO</strong> (Orange) - The person or thing doing the action
+                    </li>
+                    <li><strong style="color: #FFFF00; background: #333; padding: 2px 6px; border-radius: 3px;">WHAT
+                            DOING</strong> (Yellow) - The action or verb</li>
+                    <li><strong style="color: #4CAF50;">WHAT</strong> (Green) - The object of the action</li>
+                    <li><strong style="color: #2196F3;">WHERE</strong> (Blue) - The location</li>
+                    <li><strong style="color: #9C27B0;">HOW</strong> (Purple) - The manner or way</li>
+                    <li><strong style="color: #795548;">WHEN</strong> (Brown) - The time</li>
+                    <li><strong>JOINING</strong> (Black) - Connecting words like "the", "a", "in"</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Game Configuration Options</h2>
+                <p>Before starting, you can customize the game difficulty:</p>
+                <ul>
+                    <li><strong>Starting Stage:</strong> Choose from 8 progressive stages (1-8)</li>
+                    <li><strong>Time Limit:</strong> Set challenge level
+                        <ul>
+                            <li><span class="highlight">30 seconds</span> - 3.0x score multiplier (+10s per word) 🔥
+                            </li>
+                            <li><span class="highlight">60 seconds</span> - 2.0x score multiplier (+5s per word) ⚡</li>
+                            <li><span class="highlight">2 minutes</span> - 1.0x score multiplier (standard) ⏱️</li>
+                            <li><span class="highlight">Untimed</span> - 0.5x score multiplier (practice mode) 🎯</li>
+                        </ul>
+                    </li>
+                    <li><strong>Guard Count (0-5):</strong> Moving obstacles (+50 points each at start) 👾</li>
+                    <li><strong>Wall Trap Count (0-10):</strong> Crushing walls (+30 points each at start) 🧱</li>
+                    <li><strong>Hints:</strong> Enable/disable lightbulb hints (+100 points if disabled) 💡</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎮 How to Play</h2>
+                <ul>
+                    <li><strong>Desktop:</strong> Use arrow keys or WASD to move</li>
+                    <li><strong>Mobile/Tablet:</strong> Tap directional buttons on screen</li>
+                    <li><strong>Goal:</strong> Collect words in the correct order to build the target sentence</li>
+                    <li><strong>Avoid:</strong> Guards (red) and crushing walls (blue)</li>
+                    <li><strong>Lives:</strong> You start with 5 lives. Wrong word? Back to start, lose 1 life!</li>
+                    <li><strong>Hints:</strong> If enabled, walk over the lightbulb (💡) to see the next word flash
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>� Scoring System</h2>
+                <ul>
+                    <li><strong>Base Points:</strong> 50 points per correct word</li>
+                    <li><strong>Time Bonus:</strong> Extra points for completing quickly</li>
+                    <li><strong>Difficulty Bonuses:</strong>
+                        <ul>
+                            <li>Guards: +50 points each (awarded at start)</li>
+                            <li>Wall Traps: +30 points each (awarded at start)</li>
+                            <li>Hints Disabled: +100 points (awarded at start)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Score Multipliers:</strong> Based on time limit chosen (see above)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>� The 8 Stages</h2>
+                <ul>
+                    <li><strong>Stage 1: Sentence Sparks</strong> - WHO + WHAT DOING (e.g., "The boy runs")</li>
+                    <li><strong>Stage 2: Action Builders</strong> - WHO + WHAT DOING + WHAT (e.g., "The boy kicks the
+                        ball")</li>
+                    <li><strong>Stage 3: Scene Setters</strong> - Add WHERE (e.g., "The boy kicks the ball in the
+                        garden")</li>
+                    <li><strong>Stage 4: Detail Boosters</strong> - Add HOW (e.g., "The boy kicks the ball in the
+                        garden hard")</li>
+                    <li><strong>Stage 5: Time Travellers</strong> - Add WHEN (e.g., "The boy kicks the ball in the
+                        garden hard today")</li>
+                    <li><strong>Stage 6: Story Expanders</strong> - Longer sentences with all elements</li>
+                    <li><strong>Stage 7: Meaning Makers</strong> - Complex sentences with multiple clauses</li>
+                    <li><strong>Stage 8: Confident Communicators</strong> - Advanced sentence structures</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Learning Objectives</h2>
+                <ul>
+                    <li>Understanding sentence structure and word order</li>
+                    <li>Recognizing semantic roles of words</li>
+                    <li>Building grammatically correct sentences</li>
+                    <li>Developing reading comprehension skills</li>
+                    <li>Improving vocabulary and language awareness</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>💡 Tips for Teachers</h2>
+                <ul>
+                    <li><strong>Start Simple:</strong> Begin with 0 guards, 0 traps, and hints enabled for new learners
+                    </li>
+                    <li><strong>Gradual Challenge:</strong> Increase difficulty as students master sentence structure
+                    </li>
+                    <li><strong>Time Pressure:</strong> Use shorter time limits for advanced students to build fluency
+                    </li>
+                    <li><strong>Discuss Mistakes:</strong> Use incorrect attempts as teaching moments</li>
+                    <li><strong>Celebrate Success:</strong> Acknowledge progress through the stages</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>💻 Free & Open Source</h2>
+                <p>This project is free and open source! You can have a look at the source code, it won't bite.</p>
+                <p><a href="https://github.com/jamesabela/icemaze" target="_blank"
+                        style="color: #0288D1; font-weight: 600;">https://github.com/jamesabela/icemaze</a></p>
+                <p>You can also learn more about <a href="https://read.amazon.com/sample/B0GNZSC39P?clientId=share">Vibe
+                        coding</a> by reading my book and you can also read my <a
+                        href="https://read.amazon.com/sample/B08F7XHDT3?clientId=share">Gamification book</a> too.</p>
+                <p style=" margin-top: 20px;">
+                    <a href="https://phaser.io/news/2026/02/icemaze-game-based-learning-english-classroom"
+                        target="_blank">
+                        <img src="assets/phaser-planet-small.png" alt="Featured on Phaser" style="height: 50px;">
+                    </a>
                 </p>
-            </a>
+            </div>
 
-            <a href="resourcedash.html" class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-pink-300 transition-colors">Resource Dashboard</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Access tools, libraries, and references to accelerate your project building.
-                </p>
-            </a>
+            <div class="section"
+                style="margin-top: 40px; background: #fff8e1; padding: 30px; border-radius: 16px; border: 2px solid #ffe082; text-align: center; box-shadow: 0 10px 30px rgba(255, 160, 0, 0.1);">
+                <h2 style="color: #ff6f00; border-bottom: none; font-size: 26px; margin-bottom: 10px;">👩‍🏫 Interested
+                    in Teaching Vocab?</h2>
+                <p style="font-size: 18px; color: #5d4037; margin-bottom: 25px;">We represent a growing community of
+                    educators. If you'd like to get involved, please let us know!</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfMB8x7SFtepmRJeJPAbii8z-PIueqoCXyb_ndKkOd1E2JaZA/viewform?usp=dialog"
+                    class="start-button" target="_blank"
+                    style="background: linear-gradient(135deg, #ffca28, #ff6f00); box-shadow: 0 8px 20px rgba(255, 111, 0, 0.3); padding: 15px 40px;">
+                    📝 Fill Out Form
+                </a>
+            </div>
+        </div>
 
-            <a href="sheetconv.html" class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-cyan-300 transition-colors">Sheet Conv</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Convert spreadsheet data into usable code formats quickly and efficiently.
-                </p>
-            </a>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">
+                Powered by <a href="https://arcticreading.vercel.app/" target="_blank"
+                    rel="noopener noreferrer">LexaEngine™</a>
+            </div>
+            <div class="footer-notice">
+                LexaEngine™ is an unregistered trad emark used in connection with language and dictionary software
+                developed by James Abela. </br>
+                <a href="https://jamesabela.github.io/icemaze/">Ice Maze</a> © 2026 by <a
+                    href="https://www.linkedin.com/in/eslweb/">James Abela</a> is licensed under <a
+                    href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a><img
+                    src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""
+                    style="max-width: 1em;max-height:1em;margin-left: .2em;"><img
+                    src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt=""
+                    style="max-width: 1em;max-height:1em;margin-left: .2em;"><img
+                    src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt=""
+                    style="max-width: 1em;max-height:1em;margin-left: .2em;"><img
+                    src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt=""
+                    style="max-width: 1em;max-height:1em;margin-left: .2em;">
+            </div>
+        </div>
+    </div>
 
-            <a href="https://www.youtube.com/watch?v=DJn_vwXG8NE" target="_blank" rel="noopener noreferrer"
-                class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z">
-                        </path>
-                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">Build with Canva AI</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Watch "Build with Canva AI, Publish Anywhere (Chapter 5)" on YouTube.
-                </p>
-            </a>
-
-            <a href="https://youtu.be/u4be64M1V2Q" target="_blank" rel="noopener noreferrer"
-                class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z">
-                        </path>
-                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">Vibe Coding Video</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Watch the latest Vibe Coding tutorial.
-                </p>
-            </a>
-
-            <a href="https://jamesabela.github.io/icemaze/" target="_blank" rel="noopener noreferrer"
-                class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17">
-                        </path>
-                        <path d="m10 15 5-3-5-3z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-blue-300 transition-colors">Icemaze</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Play the Icemaze game. A fun and challenging way to test your skills.
-                </p>
-            </a>
-
-            <a href="https://github.com/jamesabela/vibes" target="_blank" rel="noopener noreferrer"
-                class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-slate-300 transition-colors">Source Code</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    View the project source on GitHub. Explore, contribute, or fork the repository.
-                </p>
-            </a>
-
-            <a href="https://readysetcompute.com/" target="_blank" rel="noopener noreferrer"
-                class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path
-                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                        </path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-green-300 transition-colors">Ready Set Compute</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Visit the blog for more insights, tutorials, and computing resources.
-                </p>
-            </a>
-
-            <a href="https://jamesabela.github.io/jsfun/pythoncopy?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjamesabela%2Fvibes%2Frefs%2Fheads%2Fmain%2Fget_ip.py"
-                target="_blank" rel="noopener noreferrer" class="glass-card p-8 flex flex-col items-start group">
-                <div class="icon-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                        <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                        <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 group-hover:text-amber-300 transition-colors">Check IP Address</h2>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    This is the Python to check your IP address.
-                </p>
-            </a>
-
-        </section>
-
-        <footer class="mt-16 text-slate-500 text-sm">
-            <p>&copy; 2026 Vibe Coding. All rights reserved.</p>
-        </footer>
-
-    </main>
 
     <script>
-        // Simple entrance animation
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.glass-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 100 * index + 300);
-            });
-        });
+        let slideIndex = 1;
+        let slideTimer;
+
+        showSlides(slideIndex);
+
+        // Next/previous controls
+        function plusSlides(n) {
+            clearTimeout(slideTimer); // Reset timer on manual interaction
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+
+            // Wrap around
+            if (n > slides.length) { slideIndex = 1 }
+            if (n < 1) { slideIndex = slides.length }
+
+            // Hide all
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+
+            // Show current
+            slides[slideIndex - 1].style.display = "block";
+
+            // Auto advance after 5 seconds
+            slideTimer = setTimeout(() => {
+                showSlides(slideIndex += 1);
+            }, 5000);
+        }
     </script>
+    <!-- 100% privacy-first analytics -->
+    <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 
 </html>
