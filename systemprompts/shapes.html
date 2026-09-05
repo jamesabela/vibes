@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shape Sorter</title>
+    <style>
+        :root {
+            --bg-color: #e0f7fa;
+            --grass-color: #81c784;
+            --circle-color: #ff7043;
+            --square-color: #5c6bc0;
+            --triangle-color: #fbc02d;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            touch-action: none;
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Top Area: Drop Zones */
+        #play-area {
+            flex: 2;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: linear-gradient(to bottom, #81d4fa 0%, #e0f7fa 100%);
+            padding: 20px;
+        }
+
+        .drop-zone {
+            width: 22vw;
+            height: 22vw;
+            border: 8px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .drop-zone.active {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Bottom Area: Inventory */
+        #inventory {
+            flex: 1;
+            background-color: var(--grass-color);
+            border-top: 10px solid #66bb6a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            padding: 10px;
+        }
+
+        /* Shapes */
+        .shape {
+            cursor: grab;
+            touch-action: none;
+            filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+            transition: transform 0.1s;
+            z-index: 10;
+        }
+
+        .shape:active {
+            cursor: grabbing;
+        }
+
+        .circle {
+            width: 80px;
+            height: 80px;
+            background-color: var(--circle-color);
+            border-radius: 50%;
+        }
+
+        .square {
+            width: 80px;
+            height: 80px;
+            background-color: var(--square-color);
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 45px solid transparent;
+            border-right: 45px solid transparent;
+            border-bottom: 80px solid var(--triangle-color);
+            background-color: transparent !important;
+        }
+
+        /* Ghost outlines in drop zones */
+        .ghost {
+            opacity: 0.3;
+            transform: scale(1.5);
+            pointer-events: none;
+        }
+
+        /* Success Animation */
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .celebrate {
+            animation: celebrate 0.5s ease;
+        }
+
+        /* Success Overlay */
+        #success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #success-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #success-message {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #replay-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: #ffca28;
+            color: #333;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 202, 40, 0.4);
+            transform: scale(1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #replay-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 202, 40, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game-container">
+        <div id="play-area">
+            <div class="drop-zone" data-shape="circle">
+                <div class="shape circle ghost"></div>
+            </div>
+            <div class="drop-zone" data-shape="square">
+                <div class="shape square ghost"></div>
+            </div>
+            <div class="drop-zone" data-shape="triangle">
+                <div class="shape triangle ghost"></div>
+            </div>
+        </div>
+
+        <div id="inventory">
+        </div>
+
+        <div id="success-overlay">
+            <div id="success-message">Excellent Work!</div>
+            <button id="replay-btn" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const inventory = document.getElementById('inventory');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        let activeElement = null;
+        let startPos = { x: 0, y: 0 };
+        let offset = { x: 0, y: 0 };
+        let originalParent = null; // To put it back if needed
+
+        function createShape(type) {
+            const el = document.createElement('div');
+            el.classList.add('shape', type);
+            el.dataset.type = type;
+
+            el.addEventListener('pointerdown', onPointerDown);
+            inventory.appendChild(el);
+        }
+
+        function initGame() {
+            const shapes = ['circle', 'square', 'triangle', 'circle', 'square', 'triangle'];
+            // Shuffle
+            shapes.sort(() => Math.random() - 0.5);
+            shapes.forEach(type => createShape(type));
+        }
+
+        function onPointerDown(e) {
+            if (!e.target.classList.contains('shape')) return;
+
+            e.preventDefault(); // Prevent scrolling on touch
+
+            activeElement = e.target;
+            originalParent = activeElement.parentElement;
+
+            // Get current visual geometry
+            const rect = activeElement.getBoundingClientRect();
+
+            // Calculate offset logic
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+
+            // Fix dimensions explicitly before moving to absolute
+            // REMOVED: Do not set width/height as it breaks CSS triangles (which need 0 width)
+            // activeElement.style.width = rect.width + 'px';
+            // activeElement.style.height = rect.height + 'px';
+
+            activeElement.style.transition = 'none';
+            activeElement.style.position = 'absolute';
+            activeElement.style.zIndex = '1000';
+
+            // Set initial position ensuring no jump
+            activeElement.style.left = rect.left + 'px';
+            activeElement.style.top = rect.top + 'px';
+
+            // Move to body to avoid overflow clipping
+            document.body.appendChild(activeElement);
+
+            // Interaction capture
+            activeElement.setPointerCapture(e.pointerId);
+
+            activeElement.addEventListener('pointermove', onPointerMove);
+            activeElement.addEventListener('pointerup', onPointerUp);
+            activeElement.addEventListener('pointercancel', onPointerUp);
+        }
+
+        function onPointerMove(e) {
+            if (!activeElement) return;
+            e.preventDefault();
+
+            const x = e.clientX - offset.x;
+            const y = e.clientY - offset.y;
+
+            activeElement.style.left = x + 'px';
+            activeElement.style.top = y + 'px';
+
+            // Check for hover state on zones using Center-Point collision
+            const shapeRect = activeElement.getBoundingClientRect();
+            const shapeCenterX = shapeRect.left + shapeRect.width / 2;
+            const shapeCenterY = shapeRect.top + shapeRect.height / 2;
+
+            dropZones.forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (shapeCenterX > rect.left && shapeCenterX < rect.right &&
+                    shapeCenterY > rect.top && shapeCenterY < rect.bottom) {
+                    zone.classList.add('active');
+                } else {
+                    zone.classList.remove('active');
+                }
+            });
+        }
+
+        function onPointerUp(e) {
+            if (!activeElement) return;
+
+            if (activeElement.hasPointerCapture(e.pointerId)) {
+                activeElement.releasePointerCapture(e.pointerId);
+            }
+
+            activeElement.removeEventListener('pointermove', onPointerMove);
+            activeElement.removeEventListener('pointerup', onPointerUp);
+            activeElement.removeEventListener('pointercancel', onPointerUp);
+
+            let matched = false;
+            const shapeRect = activeElement.getBoundingClientRect();
+            const shapeCenterX = shapeRect.left + shapeRect.width / 2;
+            const shapeCenterY = shapeRect.top + shapeRect.height / 2;
+
+            dropZones.forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+
+                if (shapeCenterX > rect.left && shapeCenterX < rect.right &&
+                    shapeCenterY > rect.top && shapeCenterY < rect.bottom) {
+
+                    if (zone.dataset.shape === activeElement.dataset.type) {
+                        // Success!
+                        snapToZone(activeElement, zone);
+                        matched = true;
+                    }
+                }
+                zone.classList.remove('active');
+            });
+
+            if (!matched) {
+                // Return home
+                returnToInventory(activeElement);
+            }
+
+            activeElement = null;
+        }
+
+        function returnToInventory(el) {
+            // Reset styles to let flexbox handle it
+            el.style.position = 'relative';
+            el.style.left = '';
+            el.style.top = '';
+            el.style.width = '';
+            el.style.height = '';
+            el.style.zIndex = '10';
+            el.style.transition = '';
+
+            inventory.appendChild(el);
+        }
+
+        function snapToZone(el, zone) {
+            el.style.transition = 'all 0.3s ease';
+            el.style.position = 'relative'; // Flexbox in zone centers it
+            el.style.left = '';
+            el.style.top = '';
+            el.style.width = '';
+            el.style.height = '';
+            el.style.transform = 'scale(1.5)';
+            // Disable further dragging for this shape
+            el.removeEventListener('pointerdown', onPointerDown);
+
+            zone.appendChild(el);
+            zone.classList.add('celebrate');
+            setTimeout(() => zone.classList.remove('celebrate'), 500);
+
+            // Check if game is complete to replenish
+            if (inventory.children.length === 0) {
+                setTimeout(() => {
+                    document.getElementById('success-overlay').classList.add('visible');
+                    createConfetti();
+                }, 500);
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('success-overlay').classList.remove('visible');
+            // Clear zones
+            dropZones.forEach(zone => {
+                // Keep only the ghost (first child)
+                const ghost = zone.querySelector('.ghost');
+                zone.innerHTML = '';
+                if (ghost) zone.appendChild(ghost);
+            });
+            initGame();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('div');
+                c.style.position = 'fixed';
+                c.style.width = '10px';
+                c.style.height = '10px';
+                c.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-10px';
+                c.style.zIndex = '3000';
+                document.body.appendChild(c);
+
+                c.animate([
+                    { transform: `translate(0, 0) rotate(0)`, opacity: 1 },
+                    { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: 1500 + Math.random() * 1500,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                }).onfinish = () => c.remove();
+            }
+        }
+
+        initGame();
+    </script>
+</body>
+
+</html>

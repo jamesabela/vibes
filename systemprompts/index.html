@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Game Prompts</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --primary: #3b82f6;
+            --border: #e2e8f0;
+            --code-bg: #f1f5f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 200px;
+            background-color: #cbd5e1;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: var(--code-bg);
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            align-self: flex-start;
+        }
+
+        h2 {
+            margin: 0.5rem 0;
+            font-size: 1.25rem;
+        }
+
+        .desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .actions {
+            margin-top: auto;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        details {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            width: 100%;
+        }
+
+        summary {
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            list-style: none;
+            /* Hide default triangle in some browsers */
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: "Show Prompt";
+            float: right;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+
+        details[open] summary::after {
+            content: "Hide Prompt";
+        }
+
+        .prompt-box {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: #334155;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .copy-btn {
+            margin-top: 0.5rem;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .copy-btn:hover {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .copy-btn.copied {
+            background: #86efac;
+            color: #064e3b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Educational Game Prompts</h1>
+            <div class="subtitle">A collection of browser-based educational games generated with single prompts.</div>
+        </header>
+
+        <div class="grid">
+
+            <!-- Early Years -->
+            <div class="card">
+                <img src="thumbnails/shape_garden.png" alt="Shape Garden Builder" class="thumbnail"
+                    onerror="this.style.background='#93c5fd'">
+                <div class="content">
+                    <span class="tag">Early Years (3-5)</span>
+                    <h2>Shape Garden Builder</h2>
+                    <p class="desc">A gentle exploration game for recognising and classifying basic 2D shapes (Circle,
+                        Square, Triangle).</p>
+                    <a href="shapes.html" class="btn" target="_blank">Play Game</a>
+
+                    <details>
+                        <summary>Prompt</summary>
+                        <div class="prompt-box">You are an expert front end educational game developer.
+                            Your task is to build a browser based, touch friendly Early Years maths game called Shape
+                            Garden Builder.
+                            Target age: 3 to 5. Learning objective: recognise and classify basic 2D shapes.
+                            Interaction philosophy: The game must not be quiz based. Children should explore by dragging
+                            and sorting shapes. There must be no multiple choice questions and no text based question
+                            screens.
+                            Design requirements: Large colourful shapes. Large drop zones. Minimal text. Clear visual
+                            feedback through animation or colour change. Gentle correction when incorrect.
+                            Technical constraints: Output a single self contained HTML file with embedded CSS and
+                            JavaScript. Use pointer events for mouse and touch compatibility. Optimised for tablet
+                            landscape layout. No external libraries.
+                            Start with three shapes only and one matching area per shape.
+                            Focus on classification and exploration rather than questions.</div>
+                        <button class="copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+                    </details>
+                </div>
+            </div>
+
+            <!-- KS1 -->
+            <div class="card">
+                <img src="thumbnails/number_bonds.png" alt="Number Bond Builder" class="thumbnail"
+                    onerror="this.style.background='#fca5a5'">
+                <div class="content">
+                    <span class="tag">KS1 (5-7)</span>
+                    <h2>Number Bond Builder</h2>
+                    <p class="desc">Constructing number bonds to 10 using tiles. Visual and interactive.</p>
+                    <a href="numberbonds.html" class="btn" target="_blank">Play Game</a>
+
+                    <details>
+                        <summary>Prompt</summary>
+                        <div class="prompt-box">You are an expert front end educational game developer.
+                            Create a browser based KS1 maths game called Number Bond Builder.
+                            Target age: 5 to 7. Learning objective: develop understanding of number bonds to 10.
+                            Interaction philosophy: Children construct combinations physically. No multiple choice
+                            questions. No worksheet style question screens. No answer typing.
+                            Design requirements: Large number tiles. Two clearly defined slots representing parts.
+                            Visual display of the whole. Immediate visual confirmation when the total matches the
+                            target. Encourage experimentation with different combinations.
+                            Technical constraints: Single self contained HTML file. Embedded CSS and JavaScript. Touch
+                            friendly pointer events. Clean uncluttered layout.</div>
+                        <button class="copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+                    </details>
+                </div>
+            </div>
+
+            <!-- KS2 -->
+            <div class="card">
+                <img src="thumbnails/fraction_tiles.png" alt="Fraction Tiles Builder" class="thumbnail"
+                    onerror="this.style.background='#86efac'">
+                <div class="content">
+                    <span class="tag">KS2 (7-11)</span>
+                    <h2>Fraction Tiles Builder</h2>
+                    <p class="desc">Understanding fractions as parts of a whole using interactive bar models and tiles.
+                    </p>
+                    <a href="fractions.html" class="btn" target="_blank">Play Game</a>
+
+                    <details>
+                        <summary>Prompt</summary>
+                        <div class="prompt-box">You are an expert front end educational game developer.
+                            Build a browser based KS2 interactive fraction game called Fraction Tiles Builder.
+                            Target age: 7 to 11. Learning objective: understand fractions as parts of a whole using
+                            visual models.
+                            Interaction philosophy: Players must construct fractions through manipulation. No quiz
+                            questions. No text heavy explanation. No multiple choice.
+                            Design requirements: A clear visual bar model representing one whole. Large draggable
+                            fraction tiles such as 1/4 or 1/2. Visual filling of the bar as tiles are added. Clear
+                            feedback if the total exceeds one whole. Celebration animation when correct.
+                            Technical constraints: Single self contained HTML file. Embedded CSS and JavaScript. Use
+                            pointer events. Touch friendly layout suitable for tablets. No external libraries.</div>
+                        <button class="copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+                    </details>
+                </div>
+            </div>
+
+            <!-- KS3 -->
+            <div class="card">
+                <img src="thumbnails/balance_lab.png" alt="Algebra Balance Lab" class="thumbnail"
+                    onerror="this.style.background='#fdba74'">
+                <div class="content">
+                    <span class="tag">KS3 (11-14)</span>
+                    <h2>Algebra Balance Lab</h2>
+                    <p class="desc">Solve linear equations by manipulating blocks on a balance scale. Visualizes
+                        equality.</p>
+                    <a href="balance.html" class="btn" target="_blank">Play Game</a>
+
+                    <details>
+                        <summary>Prompt</summary>
+                        <div class="prompt-box">You are an expert front end educational game developer.
+                            Create a browser based interactive maths game for KS3 called Algebra Balance Lab.
+                            Target age: 11 to 14. Learning objective: understand solving linear equations through
+                            balance.
+                            Interaction philosophy: Students manipulate objects to maintain equality. No quiz format. No
+                            answer input boxes. No symbolic solution typing.
+                            Design requirements: A visual balance scale. Blocks representing constants and unknowns.
+                            Ability to remove identical blocks from both sides. Scale tilts visibly when unequal. Clear
+                            visual moment when x is isolated.
+                            Technical constraints: Single self contained HTML file. Embedded CSS and JavaScript. Touch
+                            friendly drag and tap interaction. No external libraries.</div>
+                        <button class="copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+                    </details>
+                </div>
+            </div>
+
+            <!-- KS5 -->
+            <div class="card">
+                <img src="thumbnails/kinematics_lab.png" alt="Kinematics Motion Lab" class="thumbnail"
+                    onerror="this.style.background='#475569'">
+                <div class="content">
+                    <span class="tag">KS5 (16-18)</span>
+                    <h2>Kinematics Motion Lab</h2>
+                    <p class="desc">A Level Physics simulation for exploring position, velocity, and acceleration
+                        graphs.</p>
+                    <a href="kinematics.html" class="btn" target="_blank">Play Game</a>
+
+                    <details>
+                        <summary>Prompt</summary>
+                        <div class="prompt-box">You are an expert front end educational simulation developer.
+                            Create a browser based interactive A Level Physics simulation called Kinematics Motion Lab.
+                            Target age: 16 to 18. Learning objective: explore relationships between position, velocity
+                            and acceleration under constant acceleration.
+                            Interaction philosophy: Students explore parameter changes. No exam style questions. No
+                            required numeric answers. Focus on modelling and visualisation.
+                            Design requirements: Touch friendly sliders for initial velocity and acceleration. Animated
+                            particle motion on screen. Live updating position time graph. Live updating velocity time
+                            graph. Live updating acceleration time graph. Clear colour differentiation between graphs.
+                            Technical constraints: Single self contained HTML file. Embedded CSS and JavaScript. Use
+                            canvas for animation and graphing. Optimised for tablet and laptop use. No external graphing
+                            libraries.
+                            Start with constant acceleration only and a single particle.</div>
+                        <button class="copy-btn" onclick="copyPrompt(this)">Copy Prompt</button>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        async function copyPrompt(btn) {
+            // Find the prompt text div (previous sibling)
+            const promptDiv = btn.previousElementSibling;
+            // Get text, split by newlines, trim each line to remove indentation, then join
+            const text = promptDiv.innerText
+                .split('\n')
+                .map(line => line.trim())
+                .join('\n');
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    showSuccess(btn);
+                } else {
+                    fallbackCopyTextToClipboard(text, btn);
+                }
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                fallbackCopyTextToClipboard(text, btn);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text, btn) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Ensure it's not visible but part of the DOM
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showSuccess(btn);
+                } else {
+                    showError(btn);
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showError(btn);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function showSuccess(btn) {
+            const originalText = btn.innerText;
+            btn.innerText = "✓ Copied!";
+            btn.classList.add('copied');
+
+            setTimeout(() => {
+                btn.innerText = "Copy Prompt";
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
+        function showError(btn) {
+            btn.innerText = "Error copying";
+            setTimeout(() => {
+                btn.innerText = "Copy Prompt";
+            }, 2000);
+        }
+    </script>
+
+</body>
+
+</html>

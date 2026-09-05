@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Algebra Balance Lab</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --wood: #8d6e63;
+            --gold: #ffd700;
+            --x-color: #ff5722;
+            --num-color: #2196f3;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --divide-btn: #9c27b0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #ui {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        #stage {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* The Balance Scale */
+        #balance-container {
+            position: relative;
+            width: 600px;
+            height: 300px;
+            transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            transform-origin: center 250px;
+        }
+
+        #beam {
+            position: absolute;
+            top: 245px;
+            left: 50px;
+            width: 500px;
+            height: 10px;
+            background: var(--wood);
+            border-radius: 5px;
+        }
+
+        .pan {
+            position: absolute;
+            top: 255px;
+            width: 180px;
+            height: 10px;
+            background: #555;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-end;
+            justify-content: center;
+            padding: 10px;
+            min-height: 100px;
+            transform: translateY(-110px);
+        }
+
+        #left-pan {
+            left: 0;
+        }
+
+        #right-pan {
+            right: 0;
+        }
+
+        #pivot {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 150px;
+            background: var(--wood);
+            z-index: -1;
+        }
+
+        /* Blocks */
+        .block {
+            width: 45px;
+            height: 45px;
+            margin: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s, opacity 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .x-block {
+            background: #ff7043;
+            /* Orange */
+            border: 2px solid #e64a19;
+        }
+
+        .num-block {
+            background: #42a5f5;
+            /* Blue */
+            border: 2px solid #1e88e5;
+            border-radius: 50%;
+        }
+
+        .selected {
+            outline: 3px solid #4CAF50;
+            box-shadow: 0 0 15px #4CAF50;
+        }
+
+        #message {
+            margin-top: 40px;
+            padding: 15px 30px;
+            border-radius: 50px;
+            background: white;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .success {
+            background: #4CAF50 !important;
+            color: white;
+            opacity: 1 !important;
+        }
+
+        #divide-btn {
+            display: none;
+            background: var(--divide-btn);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #divide-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="ui">
+        <h1>Algebra Balance Lab</h1>
+        <p>Tap one block on <b>each</b> side to remove them and keep the scale balanced.</p>
+        <div id="equation-display" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;">x + 3 = 7</div>
+    </div>
+
+    <div id="stage">
+        <div id="pivot"></div>
+        <div id="balance-container">
+            <div id="beam"></div>
+            <div id="left-pan" class="pan"></div>
+            <div id="right-pan" class="pan"></div>
+        </div>
+    </div>
+
+    <div id="message">You isolated X! x = 4</div>
+    <button id="divide-btn" onclick="divideEquation()">Divide by 2</button>
+
+    <script>
+        const leftPan = document.getElementById('left-pan');
+        const rightPan = document.getElementById('right-pan');
+        const container = document.getElementById('balance-container');
+        const message = document.getElementById('message');
+        const eqDisplay = document.getElementById('equation-display');
+        const divideBtn = document.getElementById('divide-btn');
+
+        let state = {
+            leftX: 0,
+            leftNum: 0,
+            rightX: 0,
+            rightNum: 0,
+            selectedBlock: null,
+            unknownValue: 0
+        };
+
+        function init() {
+            generateEquation();
+            render();
+            checkWin(); // Check immediately in case it starts solved or divisible
+        }
+
+        function generateEquation() {
+            // Strict Limits to avoid UI overcrowding
+            // Max total value on a side = 12 (so at most 12 '1' blocks when simplified)
+            const MAX_SIDE_VALUE = 12;
+
+            // Randomize X value (small, 2-5)
+            state.unknownValue = Math.floor(Math.random() * 4) + 2;
+
+            // Type 1: ax + b = c (Simple)
+            // Type 2: ax + b = cx + d (Variables on both sides)
+            // Bias towards Type 2
+            const type = Math.random() > 0.4 ? 2 : 1;
+
+            if (type === 1) {
+                // ax + b = c
+                // a * X + b = c.
+                // We need c <= MAX_SIDE_VALUE.
+
+                // 1. Choose 'a' (1, 2, or 3)
+                // Ensure a*X < MAX_SIDE_VALUE
+                let maxA = Math.floor((MAX_SIDE_VALUE - 1) / state.unknownValue); // -1 to leave room for b
+                if (maxA < 1) maxA = 1;
+                if (maxA > 3) maxA = 3;
+
+                let a = Math.floor(Math.random() * maxA) + 1;
+
+                // 2. Choose 'b'
+                // a*X + b <= MAX_SIDE_VALUE
+                let maxB = MAX_SIDE_VALUE - (a * state.unknownValue);
+                if (maxB < 0) maxB = 0;
+                let b = Math.floor(Math.random() * (maxB + 1));
+
+                let c = (a * state.unknownValue) + b;
+
+                // Randomly assign to left/right
+                if (Math.random() > 0.5) {
+                    state.leftX = a; state.leftNum = b;
+                    state.rightX = 0; state.rightNum = c;
+                } else {
+                    state.leftX = 0; state.leftNum = c;
+                    state.rightX = a; state.rightNum = b;
+                }
+            } else {
+                // ax + b = cx + d
+                // side1 = ax+b, side2 = cx+d. Both <= MAX_SIDE_VALUE.
+
+                // 1. Choose cx (1 or 2)
+                let cx = Math.floor(Math.random() * 2) + 1;
+
+                // 2. Choose diff (1) - Keep it simple, usually 1 or 2 difference
+                let diff = 1;
+                if (Math.random() > 0.8) diff = 2; // Rarely 2
+
+                let ax = cx + diff;
+
+                // Check if ax fits. ax*X must be < MAX_SIDE_VALUE
+                if ((ax * state.unknownValue) >= MAX_SIDE_VALUE) {
+                    // Reduce to minimal if it doesn't fit
+                    cx = 1; ax = 2; diff = 1;
+                }
+
+                // 3. Choose b
+                // We need ax*X + b <= MAX_SIDE_VALUE
+                let maxB = MAX_SIDE_VALUE - (ax * state.unknownValue);
+                if (maxB < 0) maxB = 0;
+                let b = Math.floor(Math.random() * (maxB + 1));
+
+                // 4. Calculate d
+                // diff*X + b = d
+                let d = (diff * state.unknownValue) + b;
+
+                // Randomly assign sides
+                if (Math.random() > 0.5) {
+                    state.leftX = ax; state.leftNum = b;
+                    state.rightX = cx; state.rightNum = d;
+                } else {
+                    state.leftX = cx; state.leftNum = d;
+                    state.rightX = ax; state.rightNum = b;
+                }
+            }
+        }
+
+        function createBlock(type, value) {
+            const el = document.createElement('div');
+            el.className = `block ${type}-block`;
+            // Use Emojis
+            el.textContent = type === 'x' ? '📦' : '1';
+            el.dataset.type = type;
+
+            el.addEventListener('click', (e) => handleBlockClick(el));
+            return el;
+        }
+
+        function handleBlockClick(el) {
+            if (state.selectedBlock === null) {
+                // First selection
+                state.selectedBlock = el;
+                el.classList.add('selected');
+            } else if (state.selectedBlock === el) {
+                // Deselect
+                state.selectedBlock.classList.remove('selected');
+                state.selectedBlock = null;
+            } else {
+                // Second selection - Check if from different pans
+                const pan1 = state.selectedBlock.parentElement.id;
+                const pan2 = el.parentElement.id;
+
+                if (pan1 !== pan2 && state.selectedBlock.dataset.type === el.dataset.type) {
+                    // Valid move: Remove both
+                    removeBlocks(state.selectedBlock, el);
+                } else {
+                    // Invalid move
+                    state.selectedBlock.classList.remove('selected');
+                    state.selectedBlock = el;
+                    el.classList.add('selected');
+                }
+            }
+        }
+
+        function removeBlocks(b1, b2) {
+            const type = b1.dataset.type;
+            const p1 = b1.parentElement.id;
+
+            if (p1 === 'left-pan') {
+                if (type === 'x') state.leftX--; else state.leftNum--;
+                if (type === 'x') state.rightX--; else state.rightNum--;
+            } else {
+                if (type === 'x') state.rightX--; else state.rightNum--;
+                if (type === 'x') state.leftX--; else state.leftNum--;
+            }
+
+            state.selectedBlock = null;
+            render();
+            checkWin();
+        }
+
+        function render() {
+            leftPan.innerHTML = '';
+            rightPan.innerHTML = '';
+
+            for (let i = 0; i < state.leftX; i++) leftPan.appendChild(createBlock('x', 'x'));
+            for (let i = 0; i < state.leftNum; i++) leftPan.appendChild(createBlock('num', '1'));
+
+            for (let i = 0; i < state.rightX; i++) rightPan.appendChild(createBlock('x', 'x'));
+            for (let i = 0; i < state.rightNum; i++) rightPan.appendChild(createBlock('num', '1'));
+
+            updateBalance();
+            updateEquation();
+        }
+
+        function updateBalance() {
+            const leftWeight = (state.leftX * state.unknownValue) + state.leftNum;
+            const rightWeight = (state.rightX * state.unknownValue) + state.rightNum;
+
+            // Limit tilt to avoid flipping over
+            let tilt = (rightWeight - leftWeight) * 1.5;
+            if (tilt > 25) tilt = 25;
+            if (tilt < -25) tilt = -25;
+
+            container.style.transform = `rotate(${tilt}deg)`;
+        }
+
+        function updateEquation() {
+            let leftStr = (state.leftX > 0 ? (state.leftX > 1 ? state.leftX : '') + 'x' : '') +
+                (state.leftX > 0 && state.leftNum > 0 ? ' + ' : '') +
+                (state.leftNum > 0 ? state.leftNum : '');
+
+            let rightStr = (state.rightX > 0 ? (state.rightX > 1 ? state.rightX : '') + 'x' : '') +
+                (state.rightX > 0 && state.rightNum > 0 ? ' + ' : '') +
+                (state.rightNum > 0 ? state.rightNum : '');
+
+            if (leftStr === '') leftStr = '0';
+            if (rightStr === '') rightStr = '0';
+
+            eqDisplay.textContent = `${leftStr} = ${rightStr}`;
+        }
+
+        function checkWin() {
+            divideBtn.style.display = 'none'; // Hide by default
+
+            // Case 1: 1x = result (Done)
+            if (state.leftX === 1 && state.leftNum === 0 && state.rightX === 0 && state.rightNum === state.unknownValue) {
+                showSuccess(state.rightNum);
+                return;
+            }
+            if (state.rightX === 1 && state.rightNum === 0 && state.leftX === 0 && state.leftNum === state.unknownValue) {
+                showSuccess(state.leftNum);
+                return;
+            }
+
+            // Case 2: Ax = B (Needs division)
+            // Left has only X (multiples), Right has only Num
+            if (state.leftX > 1 && state.leftNum === 0 && state.rightX === 0 && state.rightNum > 0) {
+                // Verify it's balanced
+                if (state.leftX * state.unknownValue === state.rightNum) {
+                    showDivideButton(state.leftX);
+                }
+            }
+            // Right has only X (multiples), Left has only Num
+            if (state.rightX > 1 && state.rightNum === 0 && state.leftX === 0 && state.leftNum > 0) {
+                if (state.rightX * state.unknownValue === state.leftNum) {
+                    showDivideButton(state.rightX);
+                }
+            }
+        }
+
+        function showDivideButton(divisor) {
+            divideBtn.textContent = `Divide by ${divisor}`;
+            divideBtn.style.display = 'block';
+            message.textContent = `Balanced! Now divide both sides by ${divisor}.`;
+            message.style.opacity = 1;
+        }
+
+        function divideEquation() {
+            // Divide visible state
+            if (state.leftX > 1 && state.rightNum > 0) {
+                const divisor = state.leftX;
+                state.leftX = 1;
+                state.rightNum = state.rightNum / divisor;
+            } else if (state.rightX > 1 && state.leftNum > 0) {
+                const divisor = state.rightX;
+                state.rightX = 1;
+                state.leftNum = state.leftNum / divisor;
+            }
+            render();
+            divideBtn.style.display = 'none';
+            checkWin(); // Will trigger success
+        }
+
+        function showSuccess(val) {
+            message.classList.add('success');
+            message.innerHTML = `Success! 📦 = ${val} <br><button onclick="window.location.reload()" style="margin-top:10px; padding:5px 15px; border-radius:15px; border:none; cursor:pointer;">Next Equation</button>`;
+        }
+
+
+        init();
+    </script>
+</body>
+
+</html>
